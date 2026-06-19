@@ -16,6 +16,29 @@
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="profile" href="https://gmpg.org/xfn/11">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+	<script src="https://cdn.tailwindcss.com"></script>
+	<script>
+	tailwind.config = {
+		theme: {
+			extend: {
+				colors: {
+					primary: '#1a1a1a',
+					secondary: '#c8a97e',
+					accent: '#f5f0e8',
+				},
+				fontFamily: {
+					body: ['Inter', 'sans-serif'],
+					heading: ['Playfair Display SC', 'serif'],
+				},
+			},
+		},
+	}
+	</script>
+	<style>
+	@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+	@import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC&display=swap');
+	</style>
 
 	<?php wp_head(); ?>
 </head>
@@ -27,33 +50,17 @@
 
 	<header id="masthead" class="site-header">
 		<div class="site-branding">
-			<?php
-			the_custom_logo();
-			if ( is_front_page() && is_home() ) :
-				?>
-				<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
-				<?php
-			else :
-				?>
-				<p class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></p>
-				<?php
-			endif;
-			$belgranit_description = get_bloginfo( 'description', 'display' );
-			if ( $belgranit_description || is_customize_preview() ) :
-				?>
-				<p class="site-description"><?php echo $belgranit_description; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></p>
-			<?php endif; ?>
-		</div><!-- .site-branding -->
+			<?php the_custom_logo(); ?>
+		</div>
 
-		<nav id="site-navigation" class="main-navigation">
-			<button class="menu-toggle" aria-controls="primary-menu" aria-expanded="false"><?php esc_html_e( 'Primary Menu', 'belgranit' ); ?></button>
-			<?php
-			wp_nav_menu(
+		<nav id="site-navigation" class="main-navigation flex">
+			<?php wp_nav_menu(
 				array(
 					'theme_location' => 'menu-1',
 					'menu_id'        => 'primary-menu',
+					'menu_class'     => 'flex',
 				)
 			);
 			?>
-		</nav><!-- #site-navigation -->
-	</header><!-- #masthead -->
+		</nav>
+	</header>
