@@ -379,6 +379,183 @@ function belgranit_add_contact_options_page() {
 }
 
 /**
+ * SCF Fields: Product Services (Installation & Art Design)
+ */
+add_action( 'acf/init', 'belgranit_register_product_services_fields' );
+function belgranit_register_product_services_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_product_services',
+		'title'    => 'Услуги товара',
+		'fields'   => array(
+
+			// Section Background
+			array(
+				'key'          => 'field_product_svc_bg_image',
+				'label'        => 'Фон секции',
+				'name'         => 'product_svc_bg_image',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+
+			// Tab: Installation
+			array(
+				'key'       => 'field_product_svc_tab_install',
+				'label'     => 'Установка',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_product_svc_install_icon',
+				'label'        => 'Иконка заголовка',
+				'name'         => 'product_svc_install_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+
+			array(
+				'key'          => 'field_product_svc_install_items',
+				'label'        => 'Услуги установки',
+				'name'         => 'product_svc_install_items',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить услугу',
+				'min'          => 1,
+				'max'          => 10,
+				'sub_fields'   => array(
+					array(
+						'key'   => 'field_product_svc_install_name',
+						'label' => 'Название',
+						'name'  => 'product_svc_install_name',
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'field_product_svc_install_price',
+						'label' => 'Цена',
+						'name'  => 'product_svc_install_price',
+						'type'  => 'text',
+					),
+				),
+			),
+
+			array(
+				'key'          => 'field_product_svc_install_guarantee_title',
+				'label'        => 'Заголовок гарантии',
+				'name'         => 'product_svc_install_guarantee_title',
+				'type'         => 'text',
+				'default_value' => 'Гарантия на камень',
+			),
+
+			array(
+				'key'          => 'field_product_svc_install_guarantee_text',
+				'label'        => 'Текст гарантии',
+				'name'         => 'product_svc_install_guarantee_text',
+				'type'         => 'text',
+				'default_value' => 'Сохраняем качество на долгие годы',
+			),
+
+			array(
+				'key'          => 'field_product_svc_install_guarantee_years',
+				'label'        => 'Лет гарантии',
+				'name'         => 'product_svc_install_guarantee_years',
+				'type'         => 'number',
+				'default_value' => 50,
+			),
+
+			array(
+				'key'          => 'field_product_svc_install_guarantee_icon',
+				'label'        => 'Иконка гарантии',
+				'name'         => 'product_svc_install_guarantee_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+
+			// Tab: Art Design
+			array(
+				'key'       => 'field_product_svc_tab_art',
+				'label'     => 'Художественное оформление',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_product_svc_art_icon',
+				'label'        => 'Иконка заголовка',
+				'name'         => 'product_svc_art_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+
+			array(
+				'key'          => 'field_product_svc_art_items',
+				'label'        => 'Услуги оформления',
+				'name'         => 'product_svc_art_items',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить услугу',
+				'min'          => 1,
+				'max'          => 10,
+				'sub_fields'   => array(
+					array(
+						'key'   => 'field_product_svc_art_name',
+						'label' => 'Название',
+						'name'  => 'product_svc_art_name',
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'field_product_svc_art_price',
+						'label' => 'Цена',
+						'name'  => 'product_svc_art_price',
+						'type'  => 'text',
+					),
+				),
+			),
+
+			array(
+				'key'          => 'field_product_svc_art_note',
+				'label'        => 'Примечание внизу',
+				'name'         => 'product_svc_art_note',
+				'type'         => 'text',
+				'default_value' => 'Все работы выполняются нашими специалистами с соблюдением технологий и использованием качественных материалов',
+			),
+
+			array(
+				'key'          => 'field_product_svc_art_note_icon',
+				'label'        => 'Иконка примечания',
+				'name'         => 'product_svc_art_note_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'post_type',
+					'operator' => '==',
+					'value'    => 'product',
+				),
+			),
+		),
+	) );
+}
+
+/**
  * SCF Fields: Stats Section (Front Page)
  */
 add_action( 'acf/init', 'belgranit_register_stats_fields' );
