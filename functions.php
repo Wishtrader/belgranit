@@ -91,7 +91,7 @@ function belgranit_setup() {
 	 * @link https://codex.wordpress.org/Theme_Logo
 	 */
 	add_theme_support(
-		'custom-logo',
+		'custom_logo',
 		array(
 			'height'      => 250,
 			'width'       => 250,
@@ -99,6 +99,16 @@ function belgranit_setup() {
 			'flex-height' => true,
 		)
 	);
+
+	// WooCommerce support
+	add_theme_support( 'woocommerce', array(
+		'thumbnail_image_width' => 400,
+		'gallery_thumbnail_image_width' => 200,
+		'single_image_width' => 600,
+	) );
+	add_theme_support( 'wc-product-gallery-zoom' );
+	add_theme_support( 'wc-product-gallery-lightbox' );
+	add_theme_support( 'wc-product-gallery-slider' );
 }
 add_action( 'after_setup_theme', 'belgranit_setup' );
 
@@ -174,5 +184,1191 @@ require get_template_directory() . '/inc/customizer.php';
  */
 if ( defined( 'JETPACK__VERSION' ) ) {
 	require get_template_directory() . '/inc/jetpack.php';
+}
+
+/**
+ * Helper: Render site logo.
+ *
+ * @param string $css_class Additional CSS classes.
+ */
+function belgranit_logo( $css_class = '' ) {
+	$logo_id    = get_theme_mod( 'custom_logo' );
+	$site_name  = get_bloginfo( 'name' );
+	$class_attr = $css_class ? ' class="' . esc_attr( $css_class ) . '"' : '';
+
+	if ( $logo_id ) :
+		$logo_url = wp_get_attachment_image_url( $logo_id, 'full' );
+		?>
+		<img src="<?php echo esc_url( $logo_url ); ?>" alt="<?php echo esc_attr( $site_name ); ?>"<?php echo $class_attr; ?>>
+	<?php else : ?>
+		<span<?php echo $class_attr; ?>><?php echo esc_html( $site_name ); ?></span>
+	<?php endif;
+}
+
+/**
+ * Helper: Format phone number for tel: link.
+ *
+ * @param string $phone Raw phone string.
+ * @return string Clean phone for href.
+ */
+function belgranit_phone_link( $phone ) {
+	return preg_replace( '/[^0-9+]/', '', $phone );
+}
+
+/**
+ * Helper: Get all contact fields from SCF Options.
+ *
+ * @return array
+ */
+function belgranit_get_contacts() {
+	return array(
+		'address'   => get_field( 'contact_address', 'option' ) ?: 'г. Могилев, Пушкинский проспект 18',
+		'address_2' => get_field( 'contact_address_2', 'option' ) ?: '(бывший Октябрьский универмаг)',
+		'phone_1'   => get_field( 'contact_phone_1', 'option' ) ?: '+375 (29) 640-53-77',
+		'phone_2'   => get_field( 'contact_phone_2', 'option' ) ?: '+375 (29) 783-75-70',
+		'phone_3'   => get_field( 'contact_phone_3', 'option' ) ?: '+375 (222) 70-70-76',
+		'phone_4'   => get_field( 'contact_phone_4', 'option' ) ?: '+375 (29) 222-24-39',
+		'email'     => get_field( 'contact_email', 'option' ) ?: 'info@belgranit.by',
+	);
+}
+
+/**
+ * SCF Options Page: Контакты
+ */
+add_action( 'acf/init', 'belgranit_register_contact_fields' );
+function belgranit_register_contact_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_contact_options',
+		'title'    => 'Контактные данные',
+		'fields'   => array(
+
+			// Tab: Address
+			array(
+				'key'       => 'field_contact_tab_address',
+				'label'     => 'Адрес',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_contact_address',
+				'label'        => 'Адрес (строка 1)',
+				'name'         => 'contact_address',
+				'type'         => 'text',
+				'default_value' => 'г. Могилев, Пушкинский проспект 18',
+			),
+
+			array(
+				'key'          => 'field_contact_address_2',
+				'label'        => 'Адрес (строка 2)',
+				'name'         => 'contact_address_2',
+				'type'         => 'text',
+				'default_value' => '(бывший Октябрьский универмаг)',
+			),
+
+			// Tab: Phones
+			array(
+				'key'       => 'field_contact_tab_phones',
+				'label'     => 'Телефоны',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_contact_phone_1',
+				'label'        => 'Телефон 1',
+				'name'         => 'contact_phone_1',
+				'type'         => 'text',
+				'default_value' => '+375 (29) 640-53-77',
+			),
+
+			array(
+				'key'          => 'field_contact_phone_2',
+				'label'        => 'Телефон 2',
+				'name'         => 'contact_phone_2',
+				'type'         => 'text',
+				'default_value' => '+375 (29) 783-75-70',
+			),
+
+			array(
+				'key'          => 'field_contact_phone_3',
+				'label'        => 'Телефон 3',
+				'name'         => 'contact_phone_3',
+				'type'         => 'text',
+				'default_value' => '+375 (222) 70-70-76',
+			),
+
+			array(
+				'key'          => 'field_contact_phone_4',
+				'label'        => 'Телефон 4 (Производство)',
+				'name'         => 'contact_phone_4',
+				'type'         => 'text',
+				'default_value' => '+375 (29) 222-24-39',
+			),
+
+			// Tab: Email
+			array(
+				'key'       => 'field_contact_tab_email',
+				'label'     => 'Email',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_contact_email',
+				'label'        => 'Email',
+				'name'         => 'contact_email',
+				'type'         => 'email',
+				'default_value' => 'info@belgranit.by',
+			),
+
+		),
+
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
+}
+
+/**
+ * Pluralize Russian words based on count
+ */
+function belgranit_pluralize( $count, $one, $few, $many ) {
+	$abs    = abs( $count ) % 100;
+	$last   = $abs % 10;
+	$result = $many;
+	if ( $abs > 10 && $abs < 20 ) {
+		$result = $many;
+	} elseif ( $last === 1 ) {
+		$result = $one;
+	} elseif ( $last >= 2 && $last <= 4 ) {
+		$result = $few;
+	}
+	return $result;
+}
+
+/**
+ * Register SCF Options Page under Settings
+ */
+add_action( 'admin_menu', 'belgranit_add_contact_options_page' );
+function belgranit_add_contact_options_page() {
+	if ( function_exists( 'acf_add_options_page' ) ) {
+		acf_add_options_page( array(
+			'page_title' => 'Контакты',
+			'menu_title' => 'Контакты',
+			'menu_slug'  => 'belgranit-contacts',
+			'capability' => 'edit_posts',
+			'redirect'   => false,
+			'icon_url'   => 'dashicons-location',
+			'position'   => 30,
+		) );
+	}
+}
+
+/**
+ * SCF Fields: Stats Section (Front Page)
+ */
+add_action( 'acf/init', 'belgranit_register_stats_fields' );
+function belgranit_register_stats_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_stats_fields',
+		'title'    => 'Секция «Статистика»',
+		'fields'   => array(
+
+			// Tab: Background
+			array(
+				'key'       => 'field_stats_tab_bg',
+				'label'     => 'Фон',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_stats_bg_image',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'stats_bg_image',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+
+			// Tab: Items
+			array(
+				'key'       => 'field_stats_tab_items',
+				'label'     => 'Пункты',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_stats_items',
+				'label'        => 'Элементы статистики',
+				'name'         => 'stats_items',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить элемент',
+				'min'          => 1,
+				'max'          => 6,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_stats_icon',
+						'label'        => 'Иконка',
+						'name'         => 'stats_icon',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'thumbnail',
+						'library'       => 'all',
+					),
+					array(
+						'key'          => 'field_stats_value',
+						'label'        => 'Значение',
+						'name'         => 'stats_value',
+						'type'         => 'text',
+
+					),
+					array(
+						'key'          => 'field_stats_label',
+						'label'        => 'Подпись',
+						'name'         => 'stats_label',
+						'type'         => 'text',
+
+					),
+					array(
+						'key'          => 'field_stats_description',
+						'label'        => 'Описание',
+						'name'         => 'stats_description',
+						'type'         => 'text',
+					),
+				),
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
+}
+
+/**
+ * SCF Fields: Reviews Section (Front Page)
+ */
+add_action( 'acf/init', 'belgranit_register_reviews_fields' );
+function belgranit_register_reviews_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_reviews_fields',
+		'title'    => 'Секция «Отзывы»',
+		'fields'   => array(
+
+			// Tab: Main
+			array(
+				'key'       => 'field_reviews_tab_main',
+				'label'     => 'Основное',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_reviews_heading',
+				'label'        => 'Заголовок',
+				'name'         => 'reviews_heading',
+				'type'         => 'text',
+				'default_value' => 'Отзывы клиентов',
+			),
+
+			array(
+				'key'          => 'field_reviews_description',
+				'label'        => 'Описание',
+				'name'         => 'reviews_description',
+				'type'         => 'text',
+				'default_value' => 'Нам доверяют память о близких — смотрите реальные отзывы на независимых площадках',
+			),
+
+			// Tab: Images
+			array(
+				'key'       => 'field_reviews_tab_images',
+				'label'     => 'Изображения отзывов',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_reviews_images',
+				'label'        => 'Скриншоты отзывов',
+				'name'         => 'reviews_images',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить отзыв',
+				'min'          => 1,
+				'max'          => 6,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_review_image',
+						'label'        => 'Изображение',
+						'name'         => 'review_image',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'medium',
+						'library'       => 'all',
+					),
+					array(
+						'key'          => 'field_review_alt',
+						'label'        => 'Alt текст',
+						'name'         => 'review_alt',
+						'type'         => 'text',
+						'default_value' => 'Отзыв клиента',
+					),
+				),
+			),
+
+			// Tab: Rating
+			array(
+				'key'       => 'field_reviews_tab_rating',
+				'label'     => 'Рейтинг',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_reviews_rating_platform',
+				'label'        => 'Площадка (иконка)',
+				'name'         => 'reviews_rating_platform',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+
+			array(
+				'key'          => 'field_reviews_rating_value',
+				'label'        => 'Оценка',
+				'name'         => 'reviews_rating_value',
+				'type'         => 'text',
+				'default_value' => '4,8',
+			),
+
+			array(
+				'key'          => 'field_reviews_rating_label',
+				'label'        => 'Подпись к оценке',
+				'name'         => 'reviews_rating_label',
+				'type'         => 'text',
+				'default_value' => 'Средняя оценка нашей компании',
+			),
+
+			// Tab: CTA
+			array(
+				'key'       => 'field_reviews_tab_cta',
+				'label'     => 'Кнопка',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_reviews_cta_text',
+				'label'        => 'Текст кнопки',
+				'name'         => 'reviews_cta_text',
+				'type'         => 'text',
+				'default_value' => 'Смотреть все отзывы',
+			),
+
+			array(
+				'key'          => 'field_reviews_cta_link',
+				'label'        => 'Ссылка кнопки',
+				'name'         => 'reviews_cta_link',
+				'type'         => 'link',
+				'return_format' => 'array',
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
+}
+
+/**
+ * SCF Fields: Portfolio Section (Front Page)
+ */
+add_action( 'acf/init', 'belgranit_register_portfolio_fields' );
+function belgranit_register_portfolio_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_portfolio_fields',
+		'title'    => 'Секция «Портфолио»',
+		'fields'   => array(
+
+			// Tab: Main
+			array(
+				'key'       => 'field_portfolio_tab_main',
+				'label'     => 'Основное',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_portfolio_heading',
+				'label'        => 'Заголовок',
+				'name'         => 'portfolio_heading',
+				'type'         => 'text',
+				'default_value' => 'Наши работы',
+			),
+
+			array(
+				'key'          => 'field_portfolio_description',
+				'label'        => 'Описание',
+				'name'         => 'portfolio_description',
+				'type'         => 'text',
+				'default_value' => 'Каждое изделие — это уважение к памяти и внимание к деталям',
+			),
+
+			// Tab: Images
+			array(
+				'key'       => 'field_portfolio_tab_images',
+				'label'     => 'Изображения',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_portfolio_images',
+				'label'        => 'Работы',
+				'name'         => 'portfolio_images',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить работу',
+				'min'          => 1,
+				'max'          => 12,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_portfolio_image',
+						'label'        => 'Изображение',
+						'name'         => 'portfolio_image',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'medium',
+						'library'       => 'all',
+					),
+					array(
+						'key'          => 'field_portfolio_alt',
+						'label'        => 'Alt текст',
+						'name'         => 'portfolio_alt',
+						'type'         => 'text',
+						'default_value' => 'Пример работы',
+					),
+				),
+			),
+
+			// Tab: CTA
+			array(
+				'key'       => 'field_portfolio_tab_cta',
+				'label'     => 'Кнопка',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_portfolio_cta_text',
+				'label'        => 'Текст кнопки',
+				'name'         => 'portfolio_cta_text',
+				'type'         => 'text',
+				'default_value' => 'Смотреть все работы',
+			),
+
+			array(
+				'key'          => 'field_portfolio_cta_link',
+				'label'        => 'Ссылка кнопки',
+				'name'         => 'portfolio_cta_link',
+				'type'         => 'link',
+				'return_format' => 'array',
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
+}
+
+/**
+ * SCF Fields: Consultation Section (Front Page)
+ */
+add_action( 'acf/init', 'belgranit_register_consultation_fields' );
+function belgranit_register_consultation_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_consultation_fields',
+		'title'    => 'Секция «Консультация»',
+		'fields'   => array(
+
+			// Tab: Main
+			array(
+				'key'       => 'field_consultation_tab_main',
+				'label'     => 'Основное',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_consultation_heading',
+				'label'        => 'Заголовок',
+				'name'         => 'consultation_heading',
+				'type'         => 'text',
+				'default_value' => 'Не знаете, какой памятник выбрать?',
+			),
+
+			array(
+				'key'          => 'field_consultation_description',
+				'label'        => 'Описание',
+				'name'         => 'consultation_description',
+				'type'         => 'text',
+				'default_value' => 'Мы поможем подобрать вариант с учетом бюджета, пожеланий и особенностей участка',
+			),
+
+			// Tab: Features
+			array(
+				'key'       => 'field_consultation_tab_features',
+				'label'     => 'Преимущества',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_consultation_features',
+				'label'        => 'Преимущества',
+				'name'         => 'consultation_features',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить преимущество',
+				'min'          => 1,
+				'max'          => 6,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_consultation_feature_icon',
+						'label'        => 'Иконка',
+						'name'         => 'consultation_feature_icon',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'thumbnail',
+						'library'       => 'all',
+					),
+					array(
+						'key'          => 'field_consultation_feature_title',
+						'label'        => 'Заголовок',
+						'name'         => 'consultation_feature_title',
+						'type'         => 'text',
+
+					),
+					array(
+						'key'          => 'field_consultation_feature_description',
+						'label'        => 'Описание',
+						'name'         => 'consultation_feature_description',
+						'type'         => 'text',
+					),
+				),
+			),
+
+			// Tab: Form
+			array(
+				'key'       => 'field_consultation_tab_form',
+				'label'     => 'Форма',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_consultation_form_heading',
+				'label'        => 'Заголовок формы',
+				'name'         => 'consultation_form_heading',
+				'type'         => 'text',
+				'default_value' => 'Получите бесплатную консультацию',
+			),
+
+			array(
+				'key'          => 'field_consultation_form_policy',
+				'label'        => 'Текст политики',
+				'name'         => 'consultation_form_policy',
+				'type'         => 'text',
+				'default_value' => 'Соглашаюсь с политикой обработки персональных данных',
+			),
+
+			array(
+				'key'          => 'field_consultation_form_submit',
+				'label'        => 'Текст кнопки отправки',
+				'name'         => 'consultation_form_submit',
+				'type'         => 'text',
+				'default_value' => 'Получить консультацию',
+			),
+
+			// Tab: Benefits
+			array(
+				'key'       => 'field_consultation_tab_benefits',
+				'label'     => 'Преимущества формы',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_consultation_benefits',
+				'label'        => 'Преимущества',
+				'name'         => 'consultation_benefits',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить преимущество',
+				'min'          => 1,
+				'max'          => 6,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_consultation_benefit_highlight',
+						'label'        => 'Выделенный текст',
+						'name'         => 'consultation_benefit_highlight',
+						'type'         => 'text',
+					),
+					array(
+						'key'          => 'field_consultation_benefit_text',
+						'label'        => 'Текст',
+						'name'         => 'consultation_benefit_text',
+						'type'         => 'text',
+
+					),
+				),
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
+}
+
+/**
+ * SCF Fields: Popular Products Section (Front Page)
+ */
+add_action( 'acf/init', 'belgranit_register_popular_products_fields' );
+function belgranit_register_popular_products_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_popular_products_fields',
+		'title'    => 'Секция «Популярные решения»',
+		'fields'   => array(
+
+			array(
+				'key'          => 'field_popular_heading',
+				'label'        => 'Заголовок',
+				'name'         => 'popular_heading',
+				'type'         => 'text',
+				'default_value' => 'Популярные решения',
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
+}
+
+/**
+ * SCF Fields: Process Section (Front Page)
+ */
+add_action( 'acf/init', 'belgranit_register_process_fields' );
+function belgranit_register_process_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_process_fields',
+		'title'    => 'Секция «Процесс»',
+		'fields'   => array(
+
+			// Tab: Main
+			array(
+				'key'       => 'field_process_tab_main',
+				'label'     => 'Основное',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_process_heading',
+				'label'        => 'Заголовок',
+				'name'         => 'process_heading',
+				'type'         => 'text',
+				'default_value' => 'Берем все этапы на себя',
+			),
+
+			// Tab: Steps
+			array(
+				'key'       => 'field_process_tab_steps',
+				'label'     => 'Этапы',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_process_steps',
+				'label'        => 'Этапы процесса',
+				'name'         => 'process_steps',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить этап',
+				'min'          => 1,
+				'max'          => 8,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_process_step_number',
+						'label'        => 'Номер',
+						'name'         => 'process_step_number',
+						'type'         => 'text',
+
+					),
+					array(
+						'key'          => 'field_process_step_icon',
+						'label'        => 'Иконка',
+						'name'         => 'process_step_icon',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'thumbnail',
+						'library'       => 'all',
+					),
+					array(
+						'key'          => 'field_process_step_title',
+						'label'        => 'Заголовок',
+						'name'         => 'process_step_title',
+						'type'         => 'text',
+
+					),
+					array(
+						'key'          => 'field_process_step_description',
+						'label'        => 'Описание',
+						'name'         => 'process_step_description',
+						'type'         => 'text',
+					),
+				),
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
+}
+
+/**
+ * SCF Fields: 3D Mockup Section (Front Page)
+ */
+add_action( 'acf/init', 'belgranit_register_3d_fields' );
+function belgranit_register_3d_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_3d_fields',
+		'title'    => 'Секция «3D-макет»',
+		'fields'   => array(
+
+			// Tab: Main
+			array(
+				'key'       => 'field_3d_tab_main',
+				'label'     => 'Основное',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_3d_heading',
+				'label'        => 'Заголовок',
+				'name'         => 'section_3d_heading',
+				'type'         => 'text',
+				'default_value' => '3D-макет',
+			),
+
+			array(
+				'key'          => 'field_3d_subtitle',
+				'label'        => 'Подзаголовок',
+				'name'         => 'section_3d_subtitle',
+				'type'         => 'text',
+				'default_value' => 'Мы подготовим реалистичную 3D-визуализацию памятника бесплатно',
+			),
+
+			array(
+				'key'          => 'field_3d_image',
+				'label'        => 'Изображение 3D-макета',
+				'name'         => 'section_3d_image',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'medium',
+				'library'       => 'all',
+			),
+
+			// Tab: Features
+			array(
+				'key'       => 'field_3d_tab_features',
+				'label'     => 'Преимущества',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_3d_features_title',
+				'label'        => 'Заголовок списка',
+				'name'         => 'section_3d_features_title',
+				'type'         => 'text',
+				'default_value' => 'Почему вам нужен 3D-макет:',
+			),
+
+			array(
+				'key'          => 'field_3d_features',
+				'label'        => 'Преимущества',
+				'name'         => 'section_3d_features',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить преимущество',
+				'min'          => 1,
+				'max'          => 6,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_3d_feature_icon',
+						'label'        => 'Иконка',
+						'name'         => 'feature_icon',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'thumbnail',
+						'library'       => 'all',
+					),
+					array(
+						'key'          => 'field_3d_feature_title',
+						'label'        => 'Заголовок',
+						'name'         => 'feature_title',
+						'type'         => 'text',
+					),
+					array(
+						'key'          => 'field_3d_feature_description',
+						'label'        => 'Описание',
+						'name'         => 'feature_description',
+						'type'         => 'textarea',
+						'rows'         => 2,
+						'new_lines'    => 'br',
+					),
+				),
+			),
+
+			// Tab: CTA
+			array(
+				'key'       => 'field_3d_tab_cta',
+				'label'     => 'Кнопка',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_3d_cta_text',
+				'label'        => 'Текст кнопки',
+				'name'         => 'section_3d_cta_text',
+				'type'         => 'text',
+				'default_value' => 'Получить 3D-макет бесплатно',
+			),
+
+			array(
+				'key'          => 'field_3d_cta_link',
+				'label'        => 'Ссылка кнопки',
+				'name'         => 'section_3d_cta_link',
+				'type'         => 'link',
+				'return_format' => 'array',
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
+}
+
+/**
+ * SCF Fields: Categories Section (Front Page)
+ */
+add_action( 'acf/init', 'belgranit_register_categories_fields' );
+function belgranit_register_categories_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_categories_fields',
+		'title'    => 'Секция «Выберите что вам нужно»',
+		'fields'   => array(
+
+			// Tab: Section Title
+			array(
+				'key'       => 'field_categories_tab_title',
+				'label'     => 'Заголовок секции',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_categories_heading',
+				'label'        => 'Заголовок',
+				'name'         => 'categories_heading',
+				'type'         => 'text',
+				'default_value' => 'Выберите что вам нужно',
+			),
+
+			// Tab: Cards
+			array(
+				'key'       => 'field_categories_tab_cards',
+				'label'     => 'Карточки',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_categories_items',
+				'label'        => 'Карточки категорий',
+				'name'         => 'categories_items',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить карточку',
+				'min'          => 1,
+				'max'          => 6,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_category_image',
+						'label'        => 'Изображение',
+						'name'         => 'category_image',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'medium',
+						'library'       => 'all',
+					),
+					array(
+						'key'          => 'field_category_title',
+						'label'        => 'Название',
+						'name'         => 'category_title',
+						'type'         => 'text',
+					),
+					array(
+						'key'          => 'field_category_description',
+						'label'        => 'Краткое описание',
+						'name'         => 'category_description',
+						'type'         => 'text',
+					),
+					array(
+						'key'          => 'field_category_link',
+						'label'        => 'Ссылка на страницу',
+						'name'         => 'category_link',
+						'type'         => 'link',
+						'return_format' => 'array',
+					),
+				),
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
+}
+
+/**
+ * SCF Fields: Hero Section (Front Page)
+ */
+add_action( 'acf/init', 'belgranit_register_hero_fields' );
+function belgranit_register_hero_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_hero_fields',
+		'title'    => 'Hero секция',
+		'fields'   => array(
+
+			// Tab: Main
+			array(
+				'key'       => 'field_hero_tab_main',
+				'label'     => 'Основное',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_hero_heading',
+				'label'        => 'Заголовок',
+				'name'         => 'hero_heading',
+				'type'         => 'textarea',
+				'default_value' => "Изготовление памятников\nпод ключ в Могилёве",
+				'rows'         => 2,
+				'new_lines'    => 'br',
+			),
+
+			array(
+				'key'          => 'field_hero_bg_image',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'hero_bg_image',
+				'type'         => 'image',
+				'return_format' => 'url',
+			),
+
+			array(
+				'key'          => 'field_hero_subtitle',
+				'label'        => 'Подзаголовок',
+				'name'         => 'hero_subtitle',
+				'type'         => 'text',
+				'default_value' => 'Спокойно и без лишних хлопот: от подбора до установки',
+			),
+
+			array(
+				'key'          => 'field_hero_description',
+				'label'        => 'Описание',
+				'name'         => 'hero_description',
+				'type'         => 'text',
+				'default_value' => 'с согласованием на каждом этапе',
+			),
+
+			// Tab: Features
+			array(
+				'key'       => 'field_hero_tab_features',
+				'label'     => 'Блоки снизу',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_hero_features',
+				'label'        => 'Блоки',
+				'name'         => 'hero_features',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить блок',
+				'min'          => 1,
+				'max'          => 4,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_hero_feature_title',
+						'label'        => 'Заголовок',
+						'name'         => 'hero_feature_title',
+						'type'         => 'text',
+					),
+					array(
+						'key'          => 'field_hero_feature_icon',
+						'label'        => 'Иконка',
+						'name'         => 'hero_feature_icon',
+						'type'         => 'image',
+						'return_format' => 'url',
+					),
+				),
+			),
+
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_type',
+					'operator' => '==',
+					'value'    => 'front_page',
+				),
+			),
+		),
+	) );
 }
 

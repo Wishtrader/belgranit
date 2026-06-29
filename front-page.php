@@ -1,11 +1,20 @@
 <?php
 /**
- * Template Name: Front-page 
+ * Template Name: Front-page
  *
- * @package BelGranit 
+ * @package BelGranit
  */
 
 get_header(); ?>
-<h1 class="text-black text-[36px] md:text-[56px]">Hello World</h1>
-<?php get_footer(); ?>
 
+<?php get_template_part( 'template-parts/hero' ); ?>
+<?php get_template_part( 'template-parts/categories' ); ?>
+<?php get_template_part( 'template-parts/3d' ); ?>
+<?php get_template_part( 'template-parts/process' ); ?>
+<?php get_template_part( 'template-parts/popular-products' ); ?>
+<?php get_template_part( 'template-parts/consultation' ); ?>
+<?php get_template_part( 'template-parts/portfolio' ); ?>
+<?php get_template_part( 'template-parts/reviews' ); ?>
+
+
+<?php get_footer(); ?>
