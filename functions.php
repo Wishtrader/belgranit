@@ -113,6 +113,22 @@ function belgranit_setup() {
 add_action( 'after_setup_theme', 'belgranit_setup' );
 
 /**
+ * Products per page in catalog
+ */
+add_filter( 'loop_shop_per_page', function() {
+	return 18;
+});
+
+/**
+ * Set products per page via pre_get_posts
+ */
+add_action( 'pre_get_posts', function( $q ) {
+	if ( ! is_admin() && $q->is_main_query() && ( is_shop() || is_product_category() || is_product_tag() ) ) {
+		$q->set( 'posts_per_page', 18 );
+	}
+});
+
+/**
  * Set the content width in pixels, based on the theme's design and stylesheet.
  *
  * Priority 0 to make it available to lower priority callbacks.
@@ -386,6 +402,97 @@ function belgranit_add_contact_options_page() {
 			'position'   => 31,
 		) );
 	}
+}
+
+/**
+ * SCF Fields: Catalog Hero (Product Category)
+ */
+add_action( 'acf/init', 'belgranit_register_catalog_hero_fields' );
+function belgranit_register_catalog_hero_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'monuments' );
+	$page_id = $page ? $page->ID : 0;
+
+	if ( $page_id ) {
+		$location = array(
+			array(
+				array(
+					'param'    => 'page',
+					'operator' => '==',
+					'value'    => (string) $page_id,
+				),
+			),
+		);
+	} else {
+		$location = array(
+			array(
+				array(
+					'param'    => 'post_type',
+					'operator' => '==',
+					'value'    => 'page',
+				),
+			),
+		);
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_catalog_hero',
+		'title'    => 'Настройки каталога',
+		'fields'   => array(
+			array(
+				'key'          => 'field_catalog_hero_title',
+				'label'        => 'Заголовок баннера',
+				'name'         => 'catalog_hero_title',
+				'type'         => 'text',
+				'placeholder'  => 'Оставьте пустым для стандартного заголовка',
+			),
+			array(
+				'key'          => 'field_catalog_hero_image',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'catalog_hero_image',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'medium',
+			),
+			array(
+				'key'       => 'field_catalog_content_tab',
+				'label'     => 'Контент под товарами',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+			array(
+				'key'          => 'field_catalog_content_blocks',
+				'label'        => 'Блоки контента',
+				'name'         => 'catalog_content_blocks',
+				'type'         => 'repeater',
+				'layout'       => 'block',
+				'button_label' => 'Добавить блок',
+				'min'          => 1,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_catalog_block_heading',
+						'label'        => 'Заголовок',
+						'name'         => 'catalog_block_heading',
+						'type'         => 'text',
+						'placeholder'  => 'Заголовок секции',
+					),
+					array(
+						'key'          => 'field_catalog_block_text',
+						'label'        => 'Текст',
+						'name'         => 'catalog_block_text',
+						'type'         => 'textarea',
+						'rows'         => 6,
+						'placeholder'  => 'Текст секции',
+					),
+				),
+			),
+		),
+		'location' => $location,
+	) );
 }
 
 /**

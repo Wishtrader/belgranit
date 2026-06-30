@@ -85,10 +85,18 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 			transform: rotate(180deg);
 		}
 
-		/* Desktop menu hover */
-		.desktop-nav a {
-			transition: color 0.2s ease;
-		}
+	/* Desktop menu hover */
+	.desktop-nav a {
+		transition: color 0.2s ease;
+	}
+
+	/* Active menu item underline */
+	.desktop-nav .current-menu-item > a > span {
+		text-decoration: underline;
+		text-decoration-color: #650D10;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 5px;
+	}
 
 		/* Remove right padding from last menu item */
 		.desktop-nav ul li:last-child a span {

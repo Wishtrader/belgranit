@@ -16,8 +16,17 @@ $cat_slug      = $is_category ? $current_cat->slug : '';
 $cat_id        = $is_category ? $current_cat->term_id : 0;
 $cat_parent    = $is_category ? $current_cat->parent : 0;
 $cat_desc      = $is_category ? term_description( $current_cat->term_id, 'product_cat' ) : '';
-$cat_image_id  = $is_category ? get_term_meta( $current_cat->term_id, 'thumbnail_id', true ) : '';
-$cat_image_url = $cat_image_id ? wp_get_attachment_image_url( $cat_image_id, 'full' ) : get_template_directory_uri() . '/assets/hero.jpg';
+
+// SCF overrides for hero banner (from catalog page)
+$catalog_page    = get_page_by_path( 'monuments' );
+$catalog_page_id = $catalog_page ? $catalog_page->ID : 0;
+$scf_title       = $catalog_page_id ? get_field( 'catalog_hero_title', $catalog_page_id ) : '';
+$scf_image       = $catalog_page_id ? get_field( 'catalog_hero_image', $catalog_page_id ) : '';
+$scf_content     = $catalog_page_id ? get_field( 'catalog_content_blocks', $catalog_page_id ) : array();
+
+$cat_name       = ( $is_category && $scf_title ) ? $scf_title : $cat_name;
+$cat_image_id   = $is_category ? get_term_meta( $current_cat->term_id, 'thumbnail_id', true ) : '';
+$cat_image_url  = $scf_image ? $scf_image : ( $cat_image_id ? wp_get_attachment_image_url( $cat_image_id, 'full' ) : get_template_directory_uri() . '/assets/hero.jpg' );
 $product_count = $is_category ? $current_cat->count : wc_get_loop_prop( 'total' );
 
 // Get subcategories of "Памятники"
@@ -31,7 +40,7 @@ $product_categories = get_terms( array(
 ) );
 
 // Sort parameters
-$orderby = isset( $_GET['orderby'] ) ? sanitize_text_field( $_GET['orderby'] ) : 'date';
+$orderby = isset( $_GET['orderby'] ) ? sanitize_text_field( $_GET['orderby'] ) : '';
 $order   = isset( $_GET['order'] ) ? sanitize_text_field( $_GET['order'] ) : 'DESC';
 
 // Search
@@ -40,7 +49,7 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 
 <style>
 	/* Category sidebar */
-	.cat-link { transition: all 0.2s ease; border-radius: 12px; }
+	.cat-link { transition: all 0.2s ease; border-radius: 6px; }
 	.cat-link.active { background-color: #860000; color: #fff; }
 	.cat-link:not(.active):hover { color: #860000; background-color: rgba(134,0,0,0.06); }
 
@@ -62,55 +71,56 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 	.page-num { transition: all 0.2s ease; }
 	.page-num.active { background-color: #860000; color: #fff; }
 	.page-num:not(.active):hover { background-color: #f5f4f3; }
+
+	/* Search placeholder */
+	.search-input::placeholder {
+		font-size: 14px;
+		color: #707070;
+	}
 </style>
 
 <main id="primary" class="site-main">
 
 	<!-- Hero Banner -->
-	<section class="relative h-[200px] sm:h-[240px] lg:h-[280px] overflow-hidden mt-[72px] lg:mt-0">
-		<div class="absolute inset-0">
-			<img src="<?php echo esc_url( $cat_image_url ); ?>" alt="<?php echo esc_attr( $cat_name ); ?>" class="w-full h-full object-cover">
-			<div class="absolute inset-0 bg-black/40"></div>
-		</div>
-		<div class="relative z-10 h-full max-w-[1200px] mx-auto px-4 sm:px-6 flex flex-col justify-center">
+	<section class="relative h-[200px] sm:h-[240px] lg:h-[334px] overflow-hidden mt-[72px] lg:mt-0 bg-cover bg-center bg-no-repeat" style="background-image: url('<?php echo esc_url( $cat_image_url ); ?>');">
+		<div class="relative z-10 h-full max-w-[1200px] mx-auto flex flex-col justify-center">
 			<!-- Breadcrumbs -->
-			<nav class="font-body text-[13px] text-white/70 mb-3 flex flex-wrap items-center gap-x-1">
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="hover:text-white transition-colors">Главная</a>
+			<nav class="font-body text-[12px] text-[#606060] mb-10 flex flex-wrap items-center gap-x-1 mt-[60px] lg:mt-[136px]">
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="hover:text-black transition-colors">Главная</a>
 				<span class="mx-1">/</span>
-				<span class="text-white"><?php echo esc_html( $cat_name ); ?></span>
+				<span class="text-[#606060]"><?php echo esc_html( $cat_name ); ?></span>
 			</nav>
-			<h1 class="font-playfair text-[28px] sm:text-[36px] lg:text-[42px] text-white uppercase leading-tight mb-2">
+			<h1 class="font-playfair text-[28px] sm:text-[36px] font-bold text-[#272727] uppercase leading-tight mb-2">
 				<?php echo esc_html( $cat_name ); ?>
 			</h1>
-			<p class="font-body text-[14px] text-white/80">
+			<p class="font-manrope font-normal text-lg text-[#4c4c4c]">
 				Найдено <?php echo esc_html( $product_count ); ?> <?php echo esc_html( belgranit_pluralize( $product_count, 'единица товаров', 'единицы товаров', 'единиц товаров' ) ); ?>
 			</p>
 		</div>
 	</section>
 
 	<!-- Search & Sort Bar -->
-	<section class="py-4 border-b border-gray-100">
-		<div class="max-w-[1200px] mx-auto px-4 sm:px-6">
-			<div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+	<section class="py-[32px] sticky top-[72px] z-30 bg-white">
+		<div class="max-w-[1200px] mx-auto">
+			<div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
 				<!-- Search -->
-				<form method="GET" class="flex-1 relative" action="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">
+				<form method="GET" class="relative" style="width: 992px; max-width: 100%;" action="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>">
 					<?php if ( $cat_slug ) : ?>
 						<input type="hidden" name="product_cat" value="<?php echo esc_attr( $cat_slug ); ?>">
 					<?php endif; ?>
 					<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
 						<path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
 					</svg>
-					<input type="text" name="s" value="<?php echo esc_attr( $search_query ); ?>" placeholder="Поиск по названию..." class="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg font-body text-[14px] text-ink placeholder-gray-400 focus:outline-none focus:border-brand transition-colors">
+					<input type="text" name="s" value="<?php echo esc_attr( $search_query ); ?>" placeholder="Поиск по названию..." class="search-input w-full h-12 pl-10 pr-4 rounded-[8px] border border-[1px] border-[#724246]/20 font-body text-[14px] text-ink focus:outline-none focus:border-brand transition-colors bg-[#F7F5F3]">
 				</form>
 
 				<!-- Sort -->
 				<div class="flex items-center gap-2 shrink-0">
-					<span class="font-body text-[13px] text-gray-500 hidden sm:inline">Сортировать по:</span>
-					<select class="sort-select border border-gray-200 rounded-lg px-4 py-2.5 font-body text-[14px] text-ink bg-white cursor-pointer focus:outline-none focus:border-brand transition-colors" onchange="window.location.href=this.value">
+					<select class="sort-select h-12 border border-[1px] border-[#724246]/20 rounded-[6px] px-4 py-2.5 font-body text-[14px] text-ink bg-[#F7F5F3] cursor-pointer focus:outline-none focus:border-brand transition-colors" onchange="window.location.href=this.value">
 						<?php
 						$current_url = remove_query_arg( array( 'orderby', 'order', 'paged' ) );
 						$sort_options = array(
-							''          => 'По умолчанию',
+							''          => 'Сортировать по:',
 							'date'      => 'По дате',
 							'title'     => 'По названию',
 							'price'     => 'По цене',
@@ -129,19 +139,19 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 	</section>
 
 	<!-- Main Content -->
-	<section class="py-8 sm:py-10 lg:py-12">
-		<div class="max-w-[1200px] mx-auto px-4 sm:px-6">
-			<div class="flex flex-col lg:flex-row gap-8 lg:gap-12">
+	<section class="py-8 sm:py-10 lg:py-0">
+		<div class="max-w-[1200px] mx-auto">
+			<div class="flex flex-col lg:flex-row gap-6">
 
 				<!-- Sidebar -->
-				<aside class="lg:w-[260px] shrink-0">
+				<aside class="lg:w-[282px] shrink-0 sticky top-[184px] self-start">
 					<!-- Categories Block -->
-					<div class="bg-[#f7f6f5] rounded-2xl p-6 mb-6">
-						<h3 class="font-playfair text-[22px] sm:text-[26px] text-ink mb-6">Категории</h3>
-						<ul class="space-y-0 list-none m-0 p-0">
+					<div class="bg-[#f7f6f5] rounded-[6px] border border-px border-[#724246]/20 p-5 -mb-3">
+						<h3 class="font-manrope text-[22px] sm:text-[24px] text-[#272727] mb-6">Категории</h3>
+						<ul class="space-y-2 list-none m-0 p-0 pb-6">
 							<li>
 								<a href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>"
-								   class="cat-link block py-3 px-4 rounded-xl font-body text-[15px] font-medium <?php echo ( ! $is_category || $cat_parent !== $parent_cat_id ) ? 'active' : 'text-gray-700 hover:text-brand'; ?>">
+								   class="cat-link block py-2 px-3 rounded-[6px] font-body text-[14px] font-medium <?php echo ( ! $is_category || $cat_parent !== $parent_cat_id ) ? 'active' : 'text-gray-700 hover:text-brand'; ?>">
 									Все памятники
 								</a>
 							</li>
@@ -151,7 +161,7 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 								?>
 									<li>
 										<a href="<?php echo esc_url( get_term_link( $cat ) ); ?>"
-										   class="cat-link block py-3 px-4 rounded-xl font-body text-[15px] font-medium <?php echo $is_active ? 'active' : 'text-gray-700 hover:text-brand'; ?>">
+										   class="cat-link block py-2 px-3 rounded-[6px] font-body text-[14px] font-medium <?php echo $is_active ? 'active' : 'text-gray-700 hover:text-brand'; ?>">
 											<?php echo esc_html( $cat->name ); ?>
 										</a>
 									</li>
@@ -161,10 +171,10 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 					</div>
 
 					<!-- CTA Card -->
-					<div class="bg-brand rounded-2xl p-6 text-white">
-						<h4 class="font-playfair text-[20px] sm:text-[22px] mb-3 leading-tight uppercase">Не знаете, какой памятник выбрать?</h4>
-						<p class="font-body text-[14px] text-white/85 mb-5 leading-relaxed">Оставьте заявку. Мы поможем подобрать вариант с учетом бюджета, пожеланий и особенностей участка</p>
-						<a href="#consultation-form" class="block text-center bg-white text-ink font-body font-semibold text-[15px] px-5 py-3 rounded-[6px] hover:bg-gray-50 transition-colors">
+					<div class="bg-[#860000] flex flex-col gap-[16px] rounded-[16px] p-6 text-white">
+						<h4 class="font-manrope text-lg mb-1 leading-tight">Не знаете, какой памятник выбрать?</h4>
+						<p class="font-body text-[14px] text-white/85 leading-[1.4]">Оставьте заявку. Мы поможем подобрать вариант с учетом бюджета, пожеланий и особенностей участка</p>
+						<a href="#consultation-form" class="block text-center bg-white text-[#272727] font-manrope font-semibold text-base py-2 rounded-[6px] hover:bg-gray-50 transition-colors">
 							Получить консультацию
 						</a>
 					</div>
@@ -179,66 +189,71 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 							<?php endwhile; ?>
 						</div>
 
-						<!-- Pagination -->
-						<?php if ( wc_get_loop_prop( 'max_num_pages' ) > 1 ) : ?>
-							<div class="flex justify-center items-center gap-2 mt-10">
-								<?php
-								$current_page = max( 1, get_query_var( 'paged' ) );
-								$total_pages  = wc_get_loop_prop( 'max_num_pages' );
-								$base_url     = wc_get_page_permalink( 'shop' );
+					<!-- Pagination -->
+					<?php
+					global $wp_query;
+					$total_pages = $wp_query->max_num_pages;
+					if ( $total_pages > 1 ) :
+					?>
+						<div class="flex justify-center items-center gap-3 mt-10">
+							<?php
+							$current_page = max( 1, get_query_var( 'paged' ) );
+							$base_url     = wc_get_page_permalink( 'shop' );
 
-								if ( $cat_slug ) {
-									$base_url = add_query_arg( 'product_cat', $cat_slug, $base_url );
-								}
-								if ( $search_query ) {
-									$base_url = add_query_arg( 's', $search_query, $base_url );
-								}
-								if ( $orderby ) {
-									$base_url = add_query_arg( 'orderby', $orderby, $base_url );
-								}
+							if ( $cat_slug ) {
+								$base_url = add_query_arg( 'product_cat', $cat_slug, $base_url );
+							}
+							if ( $search_query ) {
+								$base_url = add_query_arg( 's', $search_query, $base_url );
+							}
+							if ( $orderby ) {
+								$base_url = add_query_arg( 'orderby', $orderby, $base_url );
+							}
 
-								// Previous
-								if ( $current_page > 1 ) :
-								?>
-									<a href="<?php echo esc_url( add_query_arg( 'paged', $current_page - 1, $base_url ) ); ?>" class="page-num flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 font-body text-[14px] text-gray-600 hover:border-brand hover:text-brand transition-colors">
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-									</a>
+							// Previous
+							if ( $current_page > 1 ) :
+							?>
+								<a href="<?php echo esc_url( add_query_arg( 'paged', $current_page - 1, $base_url ) ); ?>" class="flex items-center justify-center font-body text-[16px] text-gray-900 hover:text-brand transition-colors">
+									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+								</a>
+							<?php endif; ?>
+
+							<?php
+							$range = 2;
+							$start = max( 1, $current_page - $range );
+							$end   = min( $total_pages, $current_page + $range );
+
+							if ( $start > 1 ) :
+							?>
+								<a href="<?php echo esc_url( add_query_arg( 'paged', 1, $base_url ) ); ?>" class="flex items-center justify-center w-[42px] h-[42px] rounded-[8px] font-body text-[16px] text-gray-900 hover:text-brand transition-colors">1</a>
+								<?php if ( $start > 2 ) : ?>
+									<span class="text-gray-900 font-body text-[16px]">...</span>
 								<?php endif; ?>
+							<?php endif; ?>
 
-								<?php
-								$range = 2;
-								$start = max( 1, $current_page - $range );
-								$end   = min( $total_pages, $current_page + $range );
-
-								if ( $start > 1 ) :
-								?>
-									<a href="<?php echo esc_url( add_query_arg( 'paged', 1, $base_url ) ); ?>" class="page-num flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 font-body text-[14px] text-gray-600">1</a>
-									<?php if ( $start > 2 ) : ?>
-										<span class="text-gray-400 px-1">...</span>
-									<?php endif; ?>
+							<?php for ( $i = $start; $i <= $end; $i++ ) : ?>
+								<?php if ( $i === $current_page ) : ?>
+									<span class="flex items-center justify-center w-[42px] h-[42px] rounded-[8px] bg-[#860000] text-white font-body text-[16px] font-semibold"><?php echo esc_html( $i ); ?></span>
+								<?php else : ?>
+									<a href="<?php echo esc_url( add_query_arg( 'paged', $i, $base_url ) ); ?>" class="flex items-center justify-center w-[42px] h-[42px] rounded-[8px] font-body text-[16px] text-gray-900 hover:text-brand transition-colors"><?php echo esc_html( $i ); ?></a>
 								<?php endif; ?>
+							<?php endfor; ?>
 
-								<?php for ( $i = $start; $i <= $end; $i++ ) : ?>
-									<a href="<?php echo esc_url( add_query_arg( 'paged', $i, $base_url ) ); ?>" class="page-num flex items-center justify-center w-9 h-9 rounded-lg border font-body text-[14px] <?php echo $i === $current_page ? 'active border-brand' : 'border-gray-200 text-gray-600'; ?>">
-										<?php echo esc_html( $i ); ?>
-									</a>
-								<?php endfor; ?>
-
-								<?php if ( $end < $total_pages ) : ?>
-									<?php if ( $end < $total_pages - 1 ) : ?>
-										<span class="text-gray-400 px-1">...</span>
-									<?php endif; ?>
-									<a href="<?php echo esc_url( add_query_arg( 'paged', $total_pages, $base_url ) ); ?>" class="page-num flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 font-body text-[14px] text-gray-600"><?php echo esc_html( $total_pages ); ?></a>
+							<?php if ( $end < $total_pages ) : ?>
+								<?php if ( $end < $total_pages - 1 ) : ?>
+									<span class="text-gray-900 font-body text-[16px]">...</span>
 								<?php endif; ?>
+								<a href="<?php echo esc_url( add_query_arg( 'paged', $total_pages, $base_url ) ); ?>" class="flex items-center justify-center w-[42px] h-[42px] rounded-[8px] font-body text-[16px] text-gray-900 hover:text-brand transition-colors"><?php echo esc_html( $total_pages ); ?></a>
+							<?php endif; ?>
 
-								<!-- Next -->
-								<?php if ( $current_page < $total_pages ) : ?>
-									<a href="<?php echo esc_url( add_query_arg( 'paged', $current_page + 1, $base_url ) ); ?>" class="page-num flex items-center justify-center w-9 h-9 rounded-lg border border-gray-200 font-body text-[14px] text-gray-600 hover:border-brand hover:text-brand transition-colors">
-										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-									</a>
-								<?php endif; ?>
-							</div>
-						<?php endif; ?>
+							<!-- Next -->
+							<?php if ( $current_page < $total_pages ) : ?>
+								<a href="<?php echo esc_url( add_query_arg( 'paged', $current_page + 1, $base_url ) ); ?>" class="flex items-center justify-center font-body text-[16px] text-gray-900 hover:text-brand transition-colors">
+									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+								</a>
+							<?php endif; ?>
+						</div>
+					<?php endif; ?>
 
 					<?php else : ?>
 						<div class="text-center py-16">
@@ -248,109 +263,108 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 							</a>
 						</div>
 					<?php endif; ?>
+
+					<!-- Content Section -->
+					<?php if ( ! empty( $scf_content ) || $cat_desc ) : ?>
+						<div class="mt-8 sm:mt-10 mb-[40px] lg:mb-[96px]">
+							<?php if ( ! empty( $scf_content ) ) : ?>
+								<?php foreach ( $scf_content as $block ) : ?>
+									<?php if ( $block['catalog_block_heading'] || $block['catalog_block_text'] ) : ?>
+										<div class="mb-6 last:mb-0">
+											<?php if ( $block['catalog_block_heading'] ) : ?>
+												<h2 class="font-manrope text-[20px] sm:text-[24px] text-ink mb-3">
+													<?php echo esc_html( $block['catalog_block_heading'] ); ?>
+												</h2>
+											<?php endif; ?>
+											<?php if ( $block['catalog_block_text'] ) : ?>
+												<div class="font-body text-[14px] text-[#182028] leading-relaxed">
+													<?php echo wp_kses_post( nl2br( esc_html( $block['catalog_block_text'] ) ) ); ?>
+												</div>
+											<?php endif; ?>
+										</div>
+									<?php endif; ?>
+								<?php endforeach; ?>
+							<?php elseif ( $cat_desc ) : ?>
+								<div class="font-body text-[14px] text-gray-600 leading-relaxed prose prose-sm max-w-none">
+									<?php echo wp_kses_post( $cat_desc ); ?>
+								</div>
+							<?php endif; ?>
+						</div>
+					<?php endif; ?>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<!-- SEO Text Section -->
-	<?php if ( $cat_desc ) : ?>
-		<section class="py-8 sm:py-10 border-t border-gray-100">
-			<div class="max-w-[1200px] mx-auto px-4 sm:px-6">
-				<div class="font-body text-[14px] text-gray-600 leading-relaxed prose prose-sm max-w-none">
-					<?php echo wp_kses_post( $cat_desc ); ?>
-				</div>
-			</div>
-		</section>
-	<?php else : ?>
-		<section class="py-8 sm:py-10 border-t border-gray-100">
-			<div class="max-w-[1200px] mx-auto px-4 sm:px-6">
-				<div class="font-body text-[14px] text-gray-600 leading-relaxed space-y-4">
-					<p>Памятники одинарные на могилу предназначены для захоронения одного человека. Таким образом, вы помогаете определить чувства к близкому, создав особое пространство. Они становятся красивым, выразительным украшением.</p>
+			<!-- Consultation Section -->
+		<?php
+		$consult_bg       = get_field( 'product_consult_bg', 'options' );
+		$consult_title    = get_field( 'product_consult_title', 'options' ) ?: 'Остались вопросы?';
+		$consult_icon     = get_field( 'product_consult_icon', 'options' );
+		$consult_text     = get_field( 'product_consult_text', 'options' ) ?: 'Оставьте заявку. Менеджер перезвонит в ближайшее время.';
+		$consult_btn_text = get_field( 'product_consult_btn_text', 'options' ) ?: 'Получить консультацию';
+		$consult_btn_link = get_field( 'product_consult_btn_link', 'options' ) ?: '#callback';
+		$consult_features = get_field( 'product_consult_features', 'options' );
+		?>
 
-					<h2 class="font-playfair text-[20px] sm:text-[24px] text-ink uppercase mt-6 mb-3">Варианты одинарных памятников из мрамора и гранита</h2>
-					<p>Камень, из которого будет изготовлен памятник, зависит от ваших предпочтений. В портфолио нашей компании представлено несколько фотографий выполненных проектов. Вы можете сами обдумать, какой формы и размера они должны быть. Помните, что размер надмогильных сооружений не должен превышать размеры могилы.</p>
-					<p>Стандартные памятники выполняются в виде прямоугольных фигур. Они подходят для увековечивания могил мужчины и женщины. Как правило, монументы устанавливаются вертикально, что позволяет не занимать много пространства. Оригинальные одинарные надгробия включают цветники, скамейки и оградки.</p>
-					<p>Элитные одинарные памятники создаются по индивидуальным проектам. Для их изготовления применяются привозные камни зарубежных пород. Мастера используют современные станки с алмазными кругами — борфрезы, болгарки, компрессоры, резцы по камню и другое.</p>
+		<div class="relative py-12 lg:py-20" <?php if ( $consult_bg ) : ?>style="background-image: url('<?php echo esc_url( $consult_bg ); ?>'); background-size: cover; background-position: center;"<?php endif; ?>>
 
-					<h2 class="font-playfair text-[20px] sm:text-[24px] text-ink uppercase mt-6 mb-3">Заказать одинарный памятник</h2>
-					<p>Подобрать одинарный памятник на могилу или воронец можно в каталоге интернет-магазина. Чтобы сделать это, воспользуйтесь фильтром или обратитесь к менеджеру. Он выслушает вас, рассмотрит предложения и передаст заказ производственному цеху.</p>
-					<p>Изготовление одинарных памятников с крестом или без него, с другими деталями на собственном производстве занимает от нескольких дней до месяца. Вы получите готовую работу уже спустя небольшой срок.</p>
-					<p>Опытная бригада мастеров готова установить памятник на могилу с учетом всех существующих условий и требований. Обращайтесь по телефону к менеджеру компании, чтобы получить ответы на свои вопросы и оформить заказ.</p>
-				</div>
-			</div>
-		</section>
-	<?php endif; ?>
+			<div class="relative max-w-[1200px] mx-auto">
+				<div class="flex flex-col md:flex-row justify-between">
 
-	<!-- CTA Section -->
-	<section class="py-10 sm:py-14 lg:py-16 bg-muted" id="consultation-form">
-		<div class="max-w-[1200px] mx-auto px-4 sm:px-6">
-			<div class="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center">
-				<!-- Left -->
-				<div class="lg:w-[45%]">
-					<div class="flex items-start gap-4 mb-4">
-						<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/img/deco.svg" alt="" class="w-12 h-12 opacity-30 shrink-0 mt-1" style="filter: grayscale(1);">
-						<div>
-							<h2 class="font-playfair text-[24px] sm:text-[28px] lg:text-[32px] text-ink uppercase leading-tight">
-								Не нашли подходящий вариант?
-							</h2>
-							<div class="flex justify-start mt-2">
-								<img src="<?php echo esc_url( get_template_directory_uri() ); ?>/img/divider.svg" alt="" class="h-3">
+					<!-- Left: CTA -->
+					<div>
+						<h2 class="font-playfair text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-4">
+							<?php echo esc_html( $consult_title ); ?>
+						</h2>
+
+						<?php if ( $consult_icon ) : ?>
+							<div class="flex items-center gap-3 mb-6">
+								<img src="<?php echo esc_url( $consult_icon ); ?>" alt="" class="">
 							</div>
-						</div>
-					</div>
-					<p class="font-body text-[15px] text-gray-500 mb-6 leading-relaxed pl-0 lg:pl-16">
-						Изготовим памятник по вашим эскизам или предложим оптимальное решение.
-					</p>
-					<div class="pl-0 lg:pl-16">
-						<a href="#consultation-form" class="inline-flex items-center gap-2 bg-brand hover:bg-brand-dark text-white font-body font-semibold text-[15px] px-6 py-3 rounded-[6px] transition-colors">
-							Получить консультацию
-							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-							</svg>
+						<?php endif; ?>
+
+						<p class="text-gray-600 font-body leading-[1.4] mb-10 max-w-md">
+							<?php echo esc_html( $consult_text ); ?>
+						</p>
+
+						<a
+							href="<?php echo esc_url( $consult_btn_link ); ?>"
+							class="inline-flex items-center justify-center gap-2 bg-[#860000] hover:bg-red-700 lg:w-[344px] text-white text-base rounded-[6px] px-8 py-4 transition-colors font-body"
+						>
+							<?php echo esc_html( $consult_btn_text ); ?>
+						<img src="<?php echo get_template_directory_uri(); ?>/img/arr2.svg" alt="arrow" class="" />
 						</a>
 					</div>
-				</div>
 
-				<!-- Right: Features -->
-				<div class="lg:w-[55%] space-y-5">
-					<div class="flex items-start gap-4">
-						<div class="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center shrink-0">
-							<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-							</svg>
+					<!-- Right: Features -->
+					<?php if ( ! empty( $consult_features ) ) : ?>
+						<div class="space-y-10">
+							<?php foreach ( $consult_features as $feature ) :
+								$feat_icon  = $feature['product_consult_feat_icon'] ?? '';
+								$feat_title = $feature['product_consult_feat_title'] ?? '';
+								$feat_desc  = $feature['product_consult_feat_desc'] ?? '';
+								if ( ! $feat_title ) continue;
+							?>
+								<div class="flex items-center gap-4 lg:w-[390px]">
+									<div class="w-16 h-16 rounded-full border border-[#860000] flex items-center justify-center shrink-0">
+											<img src="<?php echo esc_url( $feat_icon ); ?>" alt="" class="w-8 h-8">
+									</div>
+									<div>
+										<h3 class="font-manrope font-bold text-[#182028] text-lg mb-1"><?php echo esc_html( $feat_title ); ?></h3>
+										<p class="text-gray-500 font-body text-sm leading-[1.4] max-w-[250px]"><?php echo esc_html( $feat_desc ); ?></p>
+									</div>
+								</div>
+							<?php endforeach; ?>
 						</div>
-						<div>
-							<h4 class="font-manrope text-[15px] font-bold text-ink mb-0.5">Индивидуальный подбор</h4>
-							<p class="font-body text-[13px] text-gray-500">Учтем ваши пожелания и подберем оптимальный вариант</p>
-						</div>
-					</div>
-					<div class="flex items-start gap-4">
-						<div class="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center shrink-0">
-							<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-							</svg>
-						</div>
-						<div>
-							<h4 class="font-manrope text-[15px] font-bold text-ink mb-0.5">Под любой бюджет</h4>
-							<p class="font-body text-[13px] text-gray-500">Найдем решение, которое вам подойдет</p>
-						</div>
-					</div>
-					<div class="flex items-start gap-4">
-						<div class="w-11 h-11 rounded-full border border-gray-200 flex items-center justify-center shrink-0">
-							<svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-							</svg>
-						</div>
-						<div>
-							<h4 class="font-manrope text-[15px] font-bold text-ink mb-0.5">Опыт и гарантия</h4>
-							<p class="font-body text-[13px] text-gray-500">Более 15 лет опыта и гарантия на все работы</p>
-						</div>
-					</div>
+					<?php endif; ?>
+
 				</div>
 			</div>
 		</div>
-	</section>
+
+
+
 
 </main>
 
