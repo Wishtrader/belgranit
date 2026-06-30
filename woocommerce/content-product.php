@@ -20,31 +20,27 @@ $price_html    = $product->get_price_html();
 $permalink     = $product->get_permalink();
 ?>
 
-<div class="product-card bg-white rounded-lg overflow-hidden border border-gray-100">
-	<a href="<?php echo esc_url( $permalink ); ?>" class="block">
-		<!-- Product Image -->
-		<div class="aspect-square bg-gray-50 p-4 flex items-center justify-center">
-			<?php if ( $image_id ) : ?>
-				<?php echo wp_get_attachment_image( $image_id, 'woocommerce_thumbnail', false, array(
-					'class' => 'w-full h-full object-contain',
-					'alt'   => esc_attr( $product_title ),
-				) ); ?>
-			<?php else : ?>
-				<img src="<?php echo esc_url( wc_placeholder_img_src() ); ?>" alt="<?php echo esc_attr( $product_title ); ?>" class="w-full h-full object-contain">
-			<?php endif; ?>
-		</div>
+<a href="<?php echo esc_url( $permalink ); ?>" class="group block bg-white rounded-[6px] border border-gray-100 overflow-hidden shadow-lg">
+	<!-- Product Image -->
+	<div class="overflow-hidden">
+		<?php if ( $image_id ) : ?>
+			<?php echo wp_get_attachment_image( $image_id, 'woocommerce_medium', false, array(
+				'class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300',
+				'alt'   => esc_attr( $product_title ),
+			) ); ?>
+		<?php else : ?>
+			<img src="<?php echo esc_url( wc_placeholder_img_src() ); ?>" alt="<?php echo esc_attr( $product_title ); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+		<?php endif; ?>
+	</div>
 
-		<!-- Product Info -->
-		<div class="p-4">
-			<h3 class="font-manrope text-[14px] font-bold text-ink mb-2 leading-tight line-clamp-2">
-				<?php echo esc_html( $product_title ); ?>
-			</h3>
-			<?php if ( $price_html ) : ?>
-				<div class="font-body text-[14px]">
-					<span class="text-gray-400">Цена: </span>
-					<span class="text-brand font-semibold"><?php echo wp_strip_all_tags( $price_html ); ?> <span class="font-normal text-gray-400">BYN</span></span>
-				</div>
-			<?php endif; ?>
-		</div>
-	</a>
-</div>
+	<!-- Product Info -->
+	<div class="p-4 bg-[#F5F4F3]">
+		<h3 class="font-manrope text-lg text-ink mb-3 leading-[1.2] min-h-[40px]">
+			<?php echo esc_html( $product_title ); ?>
+		</h3>
+		<div class="h-px bg-[#860000]/30 w-[46px] mb-3"></div>
+		<?php if ( $price_html ) : ?>
+			<p class="font-manrope text-base text-[#272727]">Цена: <span class="text-[#860000] font-manrope font-bold text-2xl"><?php echo wp_strip_all_tags( $price_html ); ?></span></p>
+		<?php endif; ?>
+	</div>
+</a>

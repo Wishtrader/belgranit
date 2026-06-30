@@ -673,6 +673,33 @@ function belgranit_register_product_services_fields() {
 				),
 			),
 
+			// Tab: Related Products
+			array(
+				'key'       => 'field_product_svc_tab_related',
+				'label'     => 'Похожие товары',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_product_related_title',
+				'label'        => 'Заголовок секции',
+				'name'         => 'product_related_title',
+				'type'         => 'text',
+				'default_value' => 'Похожие товары',
+			),
+
+			array(
+				'key'          => 'field_product_related_icon',
+				'label'        => 'Декоративная иконка',
+				'name'         => 'product_related_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+
 		),
 		'location' => array(
 			array(

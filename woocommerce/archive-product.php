@@ -10,18 +10,24 @@ get_header();
 // Current category
 $current_cat   = get_queried_object();
 $is_category   = is_tax( 'product_cat' ) && $current_cat instanceof WP_Term;
+$is_shop       = is_shop();
 $cat_name      = $is_category ? $current_cat->name : 'Памятники';
 $cat_slug      = $is_category ? $current_cat->slug : '';
+$cat_id        = $is_category ? $current_cat->term_id : 0;
+$cat_parent    = $is_category ? $current_cat->parent : 0;
 $cat_desc      = $is_category ? term_description( $current_cat->term_id, 'product_cat' ) : '';
 $cat_image_id  = $is_category ? get_term_meta( $current_cat->term_id, 'thumbnail_id', true ) : '';
 $cat_image_url = $cat_image_id ? wp_get_attachment_image_url( $cat_image_id, 'full' ) : get_template_directory_uri() . '/assets/hero.jpg';
 $product_count = $is_category ? $current_cat->count : wc_get_loop_prop( 'total' );
 
-// Get all product categories
+// Get subcategories of "Памятники"
+$parent_cat    = get_term_by( 'slug', 'pamyatniki', 'product_cat' );
+$parent_cat_id = $parent_cat ? $parent_cat->term_id : 0;
+
 $product_categories = get_terms( array(
 	'taxonomy'   => 'product_cat',
-	'hide_empty' => true,
-	'parent'     => 0,
+	'hide_empty' => false,
+	'parent'     => $parent_cat_id,
 ) );
 
 // Sort parameters
@@ -135,13 +141,13 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 						<ul class="space-y-0 list-none m-0 p-0">
 							<li>
 								<a href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>"
-								   class="cat-link block py-3 px-4 rounded-xl font-body text-[15px] font-medium <?php echo ! $cat_slug ? 'active' : 'text-gray-700 hover:text-brand'; ?>">
+								   class="cat-link block py-3 px-4 rounded-xl font-body text-[15px] font-medium <?php echo ( ! $is_category || $cat_parent !== $parent_cat_id ) ? 'active' : 'text-gray-700 hover:text-brand'; ?>">
 									Все памятники
 								</a>
 							</li>
 							<?php if ( ! is_wp_error( $product_categories ) && ! empty( $product_categories ) ) : ?>
 								<?php foreach ( $product_categories as $cat ) :
-									$is_active = ( $cat->slug === $cat_slug );
+									$is_active = ( (int) $cat->term_id === (int) $cat_id );
 								?>
 									<li>
 										<a href="<?php echo esc_url( get_term_link( $cat ) ); ?>"

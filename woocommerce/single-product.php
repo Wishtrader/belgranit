@@ -458,6 +458,162 @@ get_header();
 			</div>
 		</div>
 
+		<!-- Related Products Slider -->
+		<?php
+		$related_title = get_field( 'product_related_title', 'options' ) ?: 'Похожие товары';
+		$related_icon  = get_field( 'product_related_icon', 'options' );
+
+		$current_id    = get_the_ID();
+		$current_cats  = wp_get_post_terms( $current_id, 'product_cat', array( 'fields' => 'ids' ) );
+		$current_tags  = wp_get_post_terms( $current_id, 'product_tag', array( 'fields' => 'ids' ) );
+
+		$related_args = array(
+			'post_type'      => 'product',
+			'posts_per_page' => 12,
+			'post__not_in'   => array( $current_id ),
+			'post_status'    => 'publish',
+		);
+
+		if ( ! empty( $current_cats ) ) {
+			$related_args['tax_query'] = array(
+				array(
+					'taxonomy' => 'product_cat',
+					'field'    => 'term_id',
+					'terms'    => $current_cats,
+				),
+			);
+		}
+
+		$related_query = new WP_Query( $related_args );
+
+		if ( $related_query->have_posts() ) :
+		?>
+			<div class="max-w-[1200px] mx-auto py-8 lg:py-[84px]">
+				<!-- Title -->
+				<div class="text-center mb-8">
+					<h2 class="font-playfair text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-6">
+						<?php echo esc_html( $related_title ); ?>
+					</h2>
+					<?php if ( $related_icon ) : ?>
+						<div class="flex items-center justify-center gap-3">
+							<img src="<?php echo esc_url( $related_icon ); ?>" alt="" class="">
+						</div>
+					<?php else : ?>
+						<div class="flex items-center justify-center gap-3">
+							<div class="w-12 h-0.5 bg-red-800"></div>
+							<svg class="w-5 h-5 text-red-800" viewBox="0 0 24 24" fill="currentColor">
+								<path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+							</svg>
+							<div class="w-12 h-0.5 bg-red-800"></div>
+						</div>
+					<?php endif; ?>
+				</div>
+
+				<!-- Slider -->
+				<?php
+				$all_products = array();
+				while ( $related_query->have_posts() ) : $related_query->the_post();
+					$product_id    = get_the_ID();
+					$product_obj   = wc_get_product( $product_id );
+					if ( ! $product_obj ) continue;
+
+					$image_id  = $product_obj->get_image_id();
+					$image_url = $image_id ? wp_get_attachment_image_url( $image_id, 'woocommerce_medium' ) : wc_placeholder_img_src();
+
+					$all_products[] = array(
+						'id'      => $product_id,
+						'title'   => get_the_title(),
+						'image'   => $image_url,
+						'price'   => $product_obj->get_price_html(),
+						'link'    => get_the_permalink(),
+					);
+				endwhile;
+				wp_reset_postdata();
+
+				$per_slide    = 4;
+				$total        = count( $all_products );
+				$slide_count  = (int) ceil( $total / $per_slide );
+				?>
+
+				<div x-data="relatedSlider()" class="relative">
+					<!-- Desktop: 4 per slide -->
+					<div class="hidden md:block overflow-hidden">
+						<div class="flex transition-transform duration-500 ease-in-out"
+							:style="'transform: translateX(-' + (currentSlide * 100) + '%)'">
+							<?php for ( $s = 0; $s < $slide_count; $s++ ) : ?>
+								<div class="w-full flex-shrink-0">
+									<div class="grid grid-cols-4 gap-5">
+										<?php for ( $i = 0; $i < $per_slide; $i++ ) :
+											$idx = ( $s * $per_slide ) + $i;
+											if ( $idx >= $total ) break;
+											$item = $all_products[ $idx ];
+										?>
+											<a href="<?php echo esc_url( $item['link'] ); ?>" class="group block bg-white rounded-[6px] border border-gray-100 overflow-hidden shadow-lg">
+												<div class="overflow-hidden">
+													<img src="<?php echo esc_url( $item['image'] ); ?>" alt="<?php echo esc_attr( $item['title'] ); ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+												</div>
+												<div class="p-4 bg-[#F5F4F3]">
+													<h3 class="font-manrope text-lg text-ink mb-3 leading-[1.2] min-h-[40px]"><?php echo esc_html( $item['title'] ); ?></h3>
+													<div class="h-px bg-[#860000]/30 w-[46px] mb-3"></div>
+													<p class="font-manrope text-base text-[#272727]">Цена: <span class="text-[#860000] font-manrope font-bold text-2xl"><?php echo wp_strip_all_tags( $item['price'] ); ?></span></p>
+												</div>
+											</a>
+										<?php endfor; ?>
+									</div>
+								</div>
+							<?php endfor; ?>
+						</div>
+					</div>
+
+					<!-- Mobile: 2 per slide -->
+					<div class="md:hidden overflow-hidden">
+						<div class="flex transition-transform duration-500 ease-in-out"
+							:style="'transform: translateX(-' + (currentSlide * 100) + '%)'">
+							<?php
+							$mobile_per_slide = 2;
+							$mobile_slide_count = (int) ceil( $total / $mobile_per_slide );
+							for ( $s = 0; $s < $mobile_slide_count; $s++ ) : ?>
+								<div class="w-full flex-shrink-0">
+									<div class="grid grid-cols-2 gap-3">
+										<?php for ( $i = 0; $i < $mobile_per_slide; $i++ ) :
+											$idx = ( $s * $mobile_per_slide ) + $i;
+											if ( $idx >= $total ) break;
+											$item = $all_products[ $idx ];
+										?>
+											<a href="<?php echo esc_url( $item['link'] ); ?>" class="group block bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+												<div class="aspect-square overflow-hidden bg-gray-50 p-2">
+													<img src="<?php echo esc_url( $item['image'] ); ?>" alt="<?php echo esc_attr( $item['title'] ); ?>" class="w-full h-full object-contain">
+												</div>
+												<div class="p-3">
+													<h3 class="font-body text-xs font-semibold text-ink mb-2 line-clamp-2 min-h-[32px]"><?php echo esc_html( $item['title'] ); ?></h3>
+													<div class="w-full h-px bg-gray-200 mb-2"></div>
+													<p class="font-body text-xs text-gray-500">Цена: <span class="text-red-800 font-bold text-sm"><?php echo wp_strip_all_tags( $item['price'] ); ?></span></p>
+												</div>
+											</a>
+										<?php endfor; ?>
+									</div>
+								</div>
+							<?php endfor; ?>
+						</div>
+					</div>
+
+					<!-- Dots -->
+					<?php if ( $slide_count > 1 ) : ?>
+						<div class="flex justify-center gap-2 mt-10">
+							<?php for ( $s = 0; $s < $slide_count; $s++ ) : ?>
+								<button
+									type="button"
+									class="w-2 h-2 rounded-full transition-colors"
+									:class="currentSlide === <?php echo esc_attr( $s ); ?> ? 'bg-red-800' : 'bg-gray-300'"
+									@click="currentSlide = <?php echo esc_attr( $s ); ?>"
+								></button>
+							<?php endfor; ?>
+						</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		<?php endif; ?>
+
 	<?php endwhile; ?>
 </main>
 
