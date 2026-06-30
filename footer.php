@@ -158,6 +158,39 @@ $contacts = belgranit_get_contacts();
 	})();
 	</script>
 
+	<script>
+	function graniteSlider() {
+		return {
+			currentSlide: 0,
+			mobileIndex: 0,
+			touchStartX: 0,
+			touchEndX: 0,
+
+			touchStart(e) {
+				this.touchStartX = e.changedTouches[0].screenX;
+			},
+
+			touchMove(e) {
+				this.touchEndX = e.changedTouches[0].screenX;
+			},
+
+			touchEnd(e) {
+				this.touchEndX = e.changedTouches[0].screenX;
+				const diff = this.touchStartX - this.touchEndX;
+				const maxIndex = this.$refs.mobileSlider.children.length - 1;
+
+				if (Math.abs(diff) > 50) {
+					if (diff > 0 && this.mobileIndex < maxIndex) {
+						this.mobileIndex++;
+					} else if (diff < 0 && this.mobileIndex > 0) {
+						this.mobileIndex--;
+					}
+				}
+			}
+		};
+	}
+	</script>
+
 <?php wp_footer(); ?>
 
 </body>

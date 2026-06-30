@@ -375,6 +375,16 @@ function belgranit_add_contact_options_page() {
 			'icon_url'   => 'dashicons-location',
 			'position'   => 30,
 		) );
+
+		acf_add_options_page( array(
+			'page_title' => 'Услуги товаров',
+			'menu_title' => 'Услуги товаров',
+			'menu_slug'  => 'belgranit-product-services',
+			'capability' => 'edit_posts',
+			'redirect'   => false,
+			'icon_id'    => 'dashicons-cart',
+			'position'   => 31,
+		) );
 	}
 }
 
@@ -542,17 +552,348 @@ function belgranit_register_product_services_fields() {
 				'library'       => 'all',
 			),
 
+			// Tab: Granite Types
+			array(
+				'key'       => 'field_product_svc_tab_granite',
+				'label'     => 'Виды гранита',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_product_svc_granite_title',
+				'label'        => 'Заголовок секции',
+				'name'         => 'product_svc_granite_title',
+				'type'         => 'text',
+				'default_value' => 'Виды гранита',
+			),
+
+			array(
+				'key'          => 'field_product_svc_granite_icon',
+				'label'        => 'Иконка под заголовком',
+				'name'         => 'product_svc_granite_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+
+			// Tab: Consultation
+			array(
+				'key'       => 'field_product_svc_tab_consult',
+				'label'     => 'Консультация',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_product_consult_bg',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'product_consult_bg',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+
+			array(
+				'key'          => 'field_product_consult_title',
+				'label'        => 'Заголовок',
+				'name'         => 'product_consult_title',
+				'type'         => 'text',
+				'default_value' => 'Остались вопросы?',
+			),
+
+			array(
+				'key'          => 'field_product_consult_icon',
+				'label'        => 'Декоративная иконка',
+				'name'         => 'product_consult_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+
+			array(
+				'key'          => 'field_product_consult_text',
+				'label'        => 'Текст',
+				'name'         => 'product_consult_text',
+				'type'         => 'textarea',
+				'default_value' => 'Оставьте заявку. Менеджер перезвонит в ближайшее время.',
+				'rows'         => 3,
+			),
+
+			array(
+				'key'          => 'field_product_consult_btn_text',
+				'label'        => 'Текст кнопки',
+				'name'         => 'product_consult_btn_text',
+				'type'         => 'text',
+				'default_value' => 'Получить консультацию',
+			),
+
+			array(
+				'key'          => 'field_product_consult_btn_link',
+				'label'        => 'Ссылка кнопки',
+				'name'         => 'product_consult_btn_link',
+				'type'         => 'url',
+			),
+
+			array(
+				'key'          => 'field_product_consult_features',
+				'label'        => 'Преимущества',
+				'name'         => 'product_consult_features',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить преимущество',
+				'min'          => 1,
+				'max'          => 4,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_product_consult_feat_icon',
+						'label'        => 'Иконка',
+						'name'         => 'product_consult_feat_icon',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'thumbnail',
+						'library'       => 'all',
+					),
+					array(
+						'key'   => 'field_product_consult_feat_title',
+						'label' => 'Заголовок',
+						'name'  => 'product_consult_feat_title',
+						'type'  => 'text',
+					),
+					array(
+						'key'   => 'field_product_consult_feat_desc',
+						'label' => 'Описание',
+						'name'  => 'product_consult_feat_desc',
+						'type'  => 'text',
+					),
+				),
+			),
+
 		),
 		'location' => array(
 			array(
 				array(
-					'param'    => 'post_type',
+					'param'    => 'options_page',
 					'operator' => '==',
-					'value'    => 'product',
+					'value'    => 'belgranit-product-services',
 				),
 			),
 		),
 	) );
+}
+
+/**
+ * Custom Post Type: Виды гранита
+ */
+add_action( 'init', 'belgranit_register_granite_type' );
+function belgranit_register_granite_type() {
+	$labels = array(
+		'name'                  => 'Виды гранита',
+		'singular_name'         => 'Вид гранита',
+		'menu_name'             => 'Виды гранита',
+		'add_new'               => 'Добавить вид',
+		'add_new_item'          => 'Добавить новый вид гранита',
+		'edit_item'             => 'Редактировать вид гранита',
+		'new_item'              => 'Новый вид гранита',
+		'view_item'             => 'Посмотреть вид гранита',
+		'search_items'          => 'Искать виды гранита',
+		'not_found'             => 'Виды гранита не найдены',
+		'not_found_in_trash'    => 'Виды гранита не найдены в корзине',
+		'all_items'             => 'Все виды гранита',
+		'archives'              => 'Архив видов гранита',
+	);
+
+	$args = array(
+		'labels'             => $labels,
+		'public'             => true,
+		'publicly_queryable' => true,
+		'show_ui'            => true,
+		'show_in_menu'       => true,
+		'show_in_rest'       => true,
+		'query_var'          => true,
+		'rewrite'            => array( 'slug' => 'granite-types' ),
+		'capability_type'    => 'post',
+		'has_archive'        => true,
+		'hierarchical'       => false,
+		'menu_position'      => 26,
+		'menu_icon'          => 'dashicons-admin-multisite',
+		'supports'           => array( 'title', 'thumbnail' ),
+	);
+
+	register_post_type( 'granite_type', $args );
+}
+
+/**
+ * Flush rewrite rules on theme activation
+ */
+add_action( 'after_switch_theme', 'belgranit_flush_rewrite_rules' );
+function belgranit_flush_rewrite_rules() {
+	belgranit_register_granite_type();
+	flush_rewrite_rules();
+}
+
+/**
+ * Migrate product services data from individual products to global options
+ */
+add_action( 'admin_post_belgranit_migrate_product_services', 'belgranit_migrate_product_services' );
+function belgranit_migrate_product_services() {
+	if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( $_GET['_wpnonce'] ?? '', 'belgranit_migrate_product_services' ) ) {
+		wp_die( 'Нет доступа' );
+	}
+
+	$products = get_posts( array(
+		'post_type'      => 'product',
+		'posts_per_page' => -1,
+		'meta_key'       => 'product_svc_install_items',
+	) );
+
+	if ( empty( $products ) ) {
+		wp_die( 'Нет товаров со старыми данными для миграции.' );
+	}
+
+	$source = $products[0];
+	$fields = array(
+		'product_svc_bg_image',
+		'product_svc_install_icon',
+		'product_svc_install_items',
+		'product_svc_install_guarantee_title',
+		'product_svc_install_guarantee_text',
+		'product_svc_install_guarantee_years',
+		'product_svc_install_guarantee_icon',
+		'product_svc_art_icon',
+		'product_svc_art_items',
+		'product_svc_art_note',
+		'product_svc_art_note_icon',
+		'product_svc_granite_title',
+		'product_svc_granite_icon',
+		'product_consult_bg',
+		'product_consult_title',
+		'product_consult_icon',
+		'product_consult_text',
+		'product_consult_btn_text',
+		'product_consult_btn_link',
+		'product_consult_features',
+	);
+
+	$migrated = 0;
+	foreach ( $fields as $field ) {
+		$value = get_post_meta( $source->ID, $field, true );
+		if ( $value !== '' && $value !== false ) {
+			update_field( $field, $value, 'options' );
+			$migrated++;
+		}
+	}
+
+	wp_redirect( admin_url( 'admin.php?page=belgranit-product-services&migrated=' . $migrated ) );
+	exit;
+}
+
+/**
+ * Add migration notice on product services options page
+ */
+add_action( 'admin_notices', 'belgranit_migration_notice' );
+function belgranit_migration_notice() {
+	$screen = get_current_screen();
+	if ( ! $screen || $screen->id !== 'toplevel_page_belgranit-product-services' ) {
+		return;
+	}
+
+	$has_old_data = get_posts( array(
+		'post_type'      => 'product',
+		'posts_per_page' => 1,
+		'meta_key'       => 'product_svc_install_items',
+	) );
+
+	if ( empty( $has_old_data ) ) {
+		return;
+	}
+
+	if ( isset( $_GET['migrated'] ) ) {
+		echo '<div class="notice notice-success"><p>Миграция завершена. Перенесено полей: ' . esc_html( $_GET['migrated'] ) . '</p></div>';
+		return;
+	}
+
+	$migrate_url = wp_nonce_url(
+		admin_url( 'admin-post.php?action=belgranit_migrate_product_services' ),
+		'belgranit_migrate_product_services'
+	);
+
+	echo '<div class="notice notice-warning"><p><strong>Найдены старые данные в товарах.</strong> <a href="' . esc_url( $migrate_url ) . '">Перенести данные в глобальные настройки</a></p></div>';
+}
+
+/**
+ * Duplicate Granite Type
+ */
+add_filter( 'post_row_actions', 'belgranit_granite_type_row_actions', 10, 2 );
+function belgranit_granite_type_row_actions( $actions, $post ) {
+	if ( $post->post_type !== 'granite_type' ) {
+		return $actions;
+	}
+
+	$url = wp_nonce_url(
+		admin_url( 'admin.php?action=duplicate_granit_as_draft&post=' . $post->ID ),
+		'duplicate_granit_' . $post->ID
+	);
+
+	$actions['duplicate'] = '<a href="' . esc_url( $url ) . '" title="Дублировать" rel="permalink">Дублировать</a>';
+
+	return $actions;
+}
+
+add_action( 'admin_action_duplicate_granit_as_draft', 'belgranit_duplicate_granite_type' );
+function belgranit_duplicate_granite_type() {
+	if ( ! ( isset( $_GET['post'] ) && current_user_can( 'edit_posts' ) ) ) {
+		wp_die( 'Нет доступа' );
+	}
+
+	$post_id = absint( $_GET['post'] );
+	$post    = get_post( $post_id );
+
+	if ( ! $post || $post->post_type !== 'granite_type' ) {
+		wp_die( 'Запись не найдена' );
+	}
+
+	check_admin_referer( 'duplicate_granit_' . $post_id );
+
+	$current_user = wp_get_current_user();
+	$new_post = array(
+		'comment_status' => $post->comment_status,
+		'ping_status'    => $post->ping_status,
+		'post_author'    => $current_user->ID,
+		'post_content'   => $post->post_content,
+		'post_excerpt'   => $post->post_excerpt,
+		'post_name'      => $post->post_name,
+		'post_parent'    => $post->post_parent,
+		'post_password'  => $post->post_password,
+		'post_status'    => 'draft',
+		'post_title'     => $post->post_title . ' (копия)',
+		'post_type'      => $post->post_type,
+		'to_ping'        => $post->to_ping,
+		'menu_order'     => $post->menu_order,
+	);
+
+	$new_post_id = wp_insert_post( $new_post );
+
+	if ( $new_post_id ) {
+		$post_meta = get_post_meta( $post_id );
+		foreach ( $post_meta as $key => $values ) {
+			foreach ( $values as $value ) {
+				add_post_meta( $new_post_id, $key, $value );
+			}
+		}
+
+		if ( has_post_thumbnail( $post_id ) ) {
+			$thumbnail_id = get_post_thumbnail_id( $post_id );
+			set_post_thumbnail( $new_post_id, $thumbnail_id );
+		}
+	}
+
+	wp_redirect( admin_url( 'edit.php?post_type=granite_type' ) );
+	exit;
 }
 
 /**
