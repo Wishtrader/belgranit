@@ -11,33 +11,96 @@ get_header();
 $current_cat   = get_queried_object();
 $is_category   = is_tax( 'product_cat' ) && $current_cat instanceof WP_Term;
 $is_shop       = is_shop();
-$cat_name      = $is_category ? $current_cat->name : 'Памятники';
+$cat_name      = $is_category ? $current_cat->name : '';
 $cat_slug      = $is_category ? $current_cat->slug : '';
 $cat_id        = $is_category ? $current_cat->term_id : 0;
 $cat_parent    = $is_category ? $current_cat->parent : 0;
 $cat_desc      = $is_category ? term_description( $current_cat->term_id, 'product_cat' ) : '';
 
-// SCF overrides for hero banner (from catalog page)
-$catalog_page    = get_page_by_path( 'monuments' );
+// Mapping: parent category slug => page slug for ACF fields
+$catalog_sections = array(
+	'pamyatniki' => array(
+		'page'     => 'monuments',
+		'all_label' => 'Все памятники',
+	),
+	'ogradi' => array(
+		'page'     => 'fences',
+		'all_label' => 'Все ограды',
+	),
+	'oformlenie' => array(
+		'page'     => 'decoration',
+		'all_label' => 'Все оформление',
+	),
+);
+
+// Detect parent category: if current cat is a child, use its parent; if current cat IS the parent, use it
+$detected_parent_slug = '';
+if ( $is_category ) {
+	if ( isset( $catalog_sections[ $current_cat->slug ] ) ) {
+		// Current category IS a parent category (e.g. viewing "Ограды" directly)
+		$detected_parent_slug = $current_cat->slug;
+	} elseif ( $cat_parent > 0 ) {
+		// Current category is a child — find which parent it belongs to
+		$parent_term = get_term( $cat_parent, 'product_cat' );
+		if ( $parent_term && isset( $catalog_sections[ $parent_term->slug ] ) ) {
+			$detected_parent_slug = $parent_term->slug;
+		}
+	}
+} elseif ( $is_shop ) {
+	// On the main shop page — default to памятники for backwards compatibility
+	$detected_parent_slug = 'pamyatniki';
+}
+
+// Get parent category object and subcategories
+$parent_cat    = $detected_parent_slug ? get_term_by( 'slug', $detected_parent_slug, 'product_cat' ) : null;
+$parent_cat_id = $parent_cat ? $parent_cat->term_id : 0;
+
+// Page slug for ACF fields (hero & content — per section)
+$page_slug = isset( $catalog_sections[ $detected_parent_slug ] ) ? $catalog_sections[ $detected_parent_slug ]['page'] : 'monuments';
+$catalog_page    = get_page_by_path( $page_slug );
 $catalog_page_id = $catalog_page ? $catalog_page->ID : 0;
 $scf_title       = $catalog_page_id ? get_field( 'catalog_hero_title', $catalog_page_id ) : '';
 $scf_image       = $catalog_page_id ? get_field( 'catalog_hero_image', $catalog_page_id ) : '';
 $scf_content     = $catalog_page_id ? get_field( 'catalog_content_blocks', $catalog_page_id ) : array();
 
+// Default name for the "Все X" sidebar link
+$all_label = isset( $catalog_sections[ $detected_parent_slug ] ) ? $catalog_sections[ $detected_parent_slug ]['all_label'] : ( $parent_cat ? $parent_cat->name : 'Каталог' );
+
 $cat_name       = ( $is_category && $scf_title ) ? $scf_title : $cat_name;
 $cat_image_id   = $is_category ? get_term_meta( $current_cat->term_id, 'thumbnail_id', true ) : '';
 $cat_image_url  = $scf_image ? $scf_image : ( $cat_image_id ? wp_get_attachment_image_url( $cat_image_id, 'full' ) : get_template_directory_uri() . '/assets/hero.jpg' );
-$product_count = $is_category ? $current_cat->count : wc_get_loop_prop( 'total' );
+$product_count = wc_get_loop_prop( 'total' ) ? wc_get_loop_prop( 'total' ) : $current_cat->count;
 
-// Get subcategories of "Памятники"
-$parent_cat    = get_term_by( 'slug', 'pamyatniki', 'product_cat' );
-$parent_cat_id = $parent_cat ? $parent_cat->term_id : 0;
-
-$product_categories = get_terms( array(
-	'taxonomy'   => 'product_cat',
-	'hide_empty' => false,
-	'parent'     => $parent_cat_id,
-) );
+// Build sidebar categories: only children relevant to the current parent
+if ( $parent_cat_id > 0 ) {
+	// Viewing a subcategory — show siblings (children of the parent)
+	$product_categories = get_terms( array(
+		'taxonomy'   => 'product_cat',
+		'hide_empty' => false,
+		'parent'     => $parent_cat_id,
+	) );
+} elseif ( $parent_cat ) {
+	// Viewing a known parent category — show only its direct children
+	$product_categories = get_terms( array(
+		'taxonomy'   => 'product_cat',
+		'hide_empty' => false,
+		'parent'     => $parent_cat->term_id,
+	) );
+} else {
+	// Unknown category or shop — show only direct children of all known parents
+	$known_parents = array();
+	foreach ( $catalog_sections as $slug => $section ) {
+		$term = get_term_by( 'slug', $slug, 'product_cat' );
+		if ( $term && ! is_wp_error( $term ) ) {
+			$known_parents[] = $term->term_id;
+		}
+	}
+	$product_categories = get_terms( array(
+		'taxonomy'   => 'product_cat',
+		'hide_empty' => false,
+		'parent__in' => $known_parents,
+	) );
+}
 
 // Sort parameters
 $orderby = isset( $_GET['orderby'] ) ? sanitize_text_field( $_GET['orderby'] ) : '';
@@ -117,12 +180,14 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 					<div class="bg-[#f7f6f5] rounded-[6px] border border-px border-[#724246]/20 p-5 -mb-3">
 						<h3 class="font-manrope text-[22px] sm:text-[24px] text-[#272727] mb-6">Категории</h3>
 						<ul class="space-y-2 list-none m-0 p-0 pb-6">
-							<li>
-								<a href="<?php echo esc_url( wc_get_page_permalink( 'shop' ) ); ?>"
-								   class="cat-link block py-2 px-3 rounded-[6px] font-body text-[14px] font-medium <?php echo ( ! $is_category || $cat_parent !== $parent_cat_id ) ? 'active' : 'text-gray-700 hover:text-brand'; ?>">
-									Все памятники
+							<?php if ( $parent_cat ) : ?>
+								<li>
+								<a href="<?php echo esc_url( get_term_link( $parent_cat ) ); ?>"
+								   class="cat-link block py-2 px-3 rounded-[6px] font-body text-[14px] font-medium <?php echo ( ! $is_category || (int) $cat_id === (int) $parent_cat_id ) ? 'active' : 'text-gray-700 hover:text-brand'; ?>">
+									<?php echo esc_html( $all_label ); ?>
 								</a>
-							</li>
+								</li>
+							<?php endif; ?>
 							<?php if ( ! is_wp_error( $product_categories ) && ! empty( $product_categories ) ) : ?>
 								<?php foreach ( $product_categories as $cat ) :
 									$is_active = ( (int) $cat->term_id === (int) $cat_id );
@@ -140,7 +205,13 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 
 					<!-- CTA Card -->
 					<div class="bg-[#860000] flex flex-col gap-[16px] rounded-[16px] p-6 text-white">
-						<h4 class="font-manrope text-lg mb-1 leading-tight">Не знаете, какой памятник выбрать?</h4>
+						<h4 class="font-manrope text-lg mb-1 leading-tight">Не знаете, какой <?php
+							$cta_words = array(
+								'ogradi'     => 'ограду',
+								'oformlenie' => 'оформление',
+							);
+							echo esc_html( $cta_words[ $detected_parent_slug ] ?? 'памятник' );
+						?> выбрать?</h4>
 						<p class="font-body text-[14px] text-white/85 leading-[1.4]">Оставьте заявку. Мы поможем подобрать вариант с учетом бюджета, пожеланий и особенностей участка</p>
 						<a href="#consultation-form" class="block text-center bg-white text-[#272727] font-manrope font-semibold text-base py-2 rounded-[6px] hover:bg-gray-50 transition-colors">
 							Получить консультацию
@@ -264,18 +335,20 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 		</div>
 	</section>
 
-			<!-- Consultation Section -->
+			<!-- Consultation Section (universal — always from monuments page) -->
 		<?php
-		$consult_bg       = $catalog_page_id ? get_field( 'catalog_consult_bg', $catalog_page_id ) : '';
-		$consult_title    = $catalog_page_id ? ( get_field( 'catalog_consult_title', $catalog_page_id ) ?: 'Остались вопросы?' ) : 'Остались вопросы?';
-		$consult_icon     = $catalog_page_id ? get_field( 'catalog_consult_icon', $catalog_page_id ) : '';
-		$consult_text     = $catalog_page_id ? ( get_field( 'catalog_consult_text', $catalog_page_id ) ?: 'Оставьте заявку. Менеджер перезвонит в ближайшее время.' ) : 'Оставьте заявку. Менеджер перезвонит в ближайшее время.';
-		$consult_btn_text = $catalog_page_id ? ( get_field( 'catalog_consult_btn_text', $catalog_page_id ) ?: 'Получить консультацию' ) : 'Получить консультацию';
-		$consult_btn_link = $catalog_page_id ? ( get_field( 'catalog_consult_btn_link', $catalog_page_id ) ?: '#callback' ) : '#callback';
-		$consult_features = $catalog_page_id ? get_field( 'catalog_consult_features', $catalog_page_id ) : array();
+		$monuments_page    = get_page_by_path( 'monuments' );
+		$monuments_page_id = $monuments_page ? $monuments_page->ID : 0;
+		$consult_bg       = $monuments_page_id ? get_field( 'catalog_consult_bg', $monuments_page_id ) : '';
+		$consult_title    = $monuments_page_id ? ( get_field( 'catalog_consult_title', $monuments_page_id ) ?: 'Остались вопросы?' ) : 'Остались вопросы?';
+		$consult_icon     = $monuments_page_id ? get_field( 'catalog_consult_icon', $monuments_page_id ) : '';
+		$consult_text     = $monuments_page_id ? ( get_field( 'catalog_consult_text', $monuments_page_id ) ?: 'Оставьте заявку. Менеджер перезвонит в ближайшее время.' ) : 'Оставьте заявку. Менеджер перезвонит в ближайшее время.';
+		$consult_btn_text = $monuments_page_id ? ( get_field( 'catalog_consult_btn_text', $monuments_page_id ) ?: 'Получить консультацию' ) : 'Получить консультацию';
+		$consult_btn_link = $monuments_page_id ? ( get_field( 'catalog_consult_btn_link', $monuments_page_id ) ?: '#callback' ) : '#callback';
+		$consult_features = $monuments_page_id ? get_field( 'catalog_consult_features', $monuments_page_id ) : array();
 		?>
 
-		<div class="relative py-12 lg:py-20 mt-10 lg:mt-[96px]" <?php if ( $consult_bg ) : ?>style="background-image: url('<?php echo esc_url( $consult_bg ); ?>'); background-size: cover; background-position: center;"<?php endif; ?>>
+		<div class="relative py-12 lg:py-20 mt-10 lg:mt-[76px]" <?php if ( $consult_bg ) : ?>style="background-image: url('<?php echo esc_url( $consult_bg ); ?>'); background-size: cover; background-position: center;"<?php endif; ?>>
 
 			<div class="relative max-w-[1200px] mx-auto">
 				<div class="flex flex-col md:flex-row justify-between">

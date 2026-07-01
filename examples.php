@@ -147,7 +147,7 @@ if ( $current_category ) {
 				$total_pages = $works_query->max_num_pages;
 				if ( $total_pages > 1 ) :
 				?>
-					<div class="flex justify-center items-center gap-3 mt-10">
+					<div class="flex justify-center items-center gap-3 mt-7">
 						<?php
 						$range = 2;
 						$start = max( 1, $current_page - $range );
@@ -204,16 +204,16 @@ if ( $current_category ) {
 	</section>
 				<!-- Consultation Section -->
 		<?php
-		$consult_bg       = $catalog_page_id ? get_field( 'catalog_consult_bg', $catalog_page_id ) : '';
-		$consult_title    = $catalog_page_id ? ( get_field( 'catalog_consult_title', $catalog_page_id ) ?: 'Остались вопросы?' ) : 'Остались вопросы?';
-		$consult_icon     = $catalog_page_id ? get_field( 'catalog_consult_icon', $catalog_page_id ) : '';
-		$consult_text     = $catalog_page_id ? ( get_field( 'catalog_consult_text', $catalog_page_id ) ?: 'Оставьте заявку. Менеджер перезвонит в ближайшее время.' ) : 'Оставьте заявку. Менеджер перезвонит в ближайшее время.';
-		$consult_btn_text = $catalog_page_id ? ( get_field( 'catalog_consult_btn_text', $catalog_page_id ) ?: 'Получить консультацию' ) : 'Получить консультацию';
-		$consult_btn_link = $catalog_page_id ? ( get_field( 'catalog_consult_btn_link', $catalog_page_id ) ?: '#callback' ) : '#callback';
-		$consult_features = $catalog_page_id ? get_field( 'catalog_consult_features', $catalog_page_id ) : array();
+		$consult_bg       = $page_id ? get_field( 'examples_consult_bg', $page_id ) : '';
+		$consult_title    = $page_id ? ( get_field( 'examples_consult_title', $page_id ) ?: 'Остались вопросы?' ) : 'Остались вопросы?';
+		$consult_icon     = $page_id ? get_field( 'examples_consult_icon', $page_id ) : '';
+		$consult_text     = $page_id ? ( get_field( 'examples_consult_text', $page_id ) ?: 'Оставьте заявку. Менеджер перезвонит в ближайшее время.' ) : 'Оставьте заявку. Менеджер перезвонит в ближайшее время.';
+		$consult_btn_text = $page_id ? ( get_field( 'examples_consult_btn_text', $page_id ) ?: 'Получить консультацию' ) : 'Получить консультацию';
+		$consult_btn_link = $page_id ? ( get_field( 'examples_consult_btn_link', $page_id ) ?: '#callback' ) : '#callback';
+		$consult_features = $page_id ? get_field( 'examples_consult_features', $page_id ) : array();
 		?>
 
-		<div class="relative py-12 lg:py-20 mt-10 lg:mt-[96px]" <?php if ( $consult_bg ) : ?>style="background-image: url('<?php echo esc_url( $consult_bg ); ?>'); background-size: cover; background-position: center;"<?php endif; ?>>
+		<div class="relative py-12 lg:py-20 mt-10 lg:mt-14" <?php if ( $consult_bg ) : ?>style="background-image: url('<?php echo esc_url( $consult_bg ); ?>'); background-size: cover; background-position: center;"<?php endif; ?>>
 
 			<div class="relative max-w-[1200px] mx-auto">
 				<div class="flex flex-col md:flex-row justify-between">
@@ -247,9 +247,9 @@ if ( $current_category ) {
 					<?php if ( ! empty( $consult_features ) ) : ?>
 						<div class="space-y-10">
 							<?php foreach ( $consult_features as $feature ) :
-								$feat_icon  = $feature['catalog_consult_feat_icon'] ?? '';
-								$feat_title = $feature['catalog_consult_feat_title'] ?? '';
-								$feat_desc  = $feature['catalog_consult_feat_desc'] ?? '';
+							$feat_icon  = $feature['examples_consult_feat_icon'] ?? '';
+							$feat_title = $feature['examples_consult_feat_title'] ?? '';
+							$feat_desc  = $feature['examples_consult_feat_desc'] ?? '';
 								if ( ! $feat_title ) continue;
 							?>
 								<div class="flex items-center gap-4 lg:w-[390px]">

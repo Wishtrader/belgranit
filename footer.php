@@ -11,12 +11,12 @@ $contacts = belgranit_get_contacts();
 ?>
 
 	<footer id="colophon" class="site-footer bg-[#2d2d2d]">
-		<div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-10 sm:py-14 lg:py-16">
+		<div class="max-w-[1200px] mx-auto px-4 lg:px-0 sm:px-6 py-10 sm:py-14 lg:py-12 relative">
 			<div class="flex flex-col lg:flex-row lg:items-start gap-10 lg:gap-8">
 
 				<!-- Logo + Description -->
-				<div class="lg:w-[280px] shrink-0">
-					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center gap-2.5 mb-4" aria-label="<?php bloginfo( 'name' ); ?>">
+				<div class="lg:w-[264px] shrink-0">
+					<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center gap-2.5 mb-4 max-w-[203px]" aria-label="<?php bloginfo( 'name' ); ?>">
 						<?php belgranit_logo( 'h-8 sm:h-10 w-auto brightness-0 invert' ); ?>
 					</a>
 					<p class="font-body text-sm text-gray-400 leading-relaxed">
@@ -27,21 +27,20 @@ $contacts = belgranit_get_contacts();
 				</div>
 
 				<!-- Каталог -->
-				<div class="lg:w-auto">
+				<div class="lg:w-[264px]">
 					<h3 class="font-body text-base font-bold text-white mb-4">Каталог</h3>
 					<ul class="space-y-2.5 list-none m-0 p-0">
 						<?php
-						$catalog_items = array(
-							array( 'title' => 'Памятники', 'url' => '#' ),
-							array( 'title' => 'Благоустройство', 'url' => '#' ),
-							array( 'title' => 'Ограды', 'url' => '#' ),
-							array( 'title' => 'Оформление', 'url' => '#' ),
-						);
-						foreach ( $catalog_items as $item ) :
+						$catalog_slugs = array( 'pamyatniki', 'blagoustrojstvo', 'ogradi', 'oformlenie' );
+						$catalog_titles = array( 'Памятники', 'Благоустройство', 'Ограды', 'Оформление' );
+						foreach ( $catalog_slugs as $idx => $slug ) :
+							$term = get_term_by( 'slug', $slug, 'product_cat' );
+							$url = $term ? get_term_link( $term ) : '#';
+							if ( is_wp_error( $url ) ) $url = '#';
 						?>
 							<li>
-								<a href="<?php echo esc_url( $item['url'] ); ?>" class="font-body text-sm text-gray-400 hover:text-white transition-colors">
-									<?php echo esc_html( $item['title'] ); ?>
+								<a href="<?php echo esc_url( $url ); ?>" class="font-body text-sm text-gray-400 hover:text-white transition-colors">
+									<?php echo esc_html( $catalog_titles[ $idx ] ); ?>
 								</a>
 							</li>
 						<?php endforeach; ?>
@@ -49,7 +48,7 @@ $contacts = belgranit_get_contacts();
 				</div>
 
 				<!-- Информация -->
-				<div class="lg:w-auto">
+				<div class="lg:w-[264px]">
 					<h3 class="font-body text-base font-bold text-white mb-4">Информация</h3>
 					<ul class="space-y-2.5 list-none m-0 p-0">
 						<?php
@@ -70,26 +69,26 @@ $contacts = belgranit_get_contacts();
 				</div>
 
 				<!-- Контакты -->
-				<div class="lg:w-auto lg:ml-auto">
+				<div class="lg:w-[291px]">
 					<h3 class="font-body text-base font-bold text-white mb-4">Контакты</h3>
-					<ul class="space-y-2.5 list-none m-0 p-0">
+					<ul class="space-y-[1px] list-none m-0 p-0">
 						<li>
-							<a href="tel:<?php echo esc_attr( belgranit_phone_link( $contacts['phone_1'] ) ); ?>" class="font-body text-sm text-gray-400 hover:text-white transition-colors">
+							<a href="tel:<?php echo esc_attr( belgranit_phone_link( $contacts['phone_1'] ) ); ?>" class="font-body text-base text-gray-400 hover:text-white transition-colors">
 								<?php echo esc_html( $contacts['phone_1'] ); ?>
 							</a>
 						</li>
 						<li>
-							<a href="tel:<?php echo esc_attr( belgranit_phone_link( $contacts['phone_2'] ) ); ?>" class="font-body text-sm text-gray-400 hover:text-white transition-colors">
+							<a href="tel:<?php echo esc_attr( belgranit_phone_link( $contacts['phone_2'] ) ); ?>" class="font-body text-base text-gray-400 hover:text-white transition-colors">
 								<?php echo esc_html( $contacts['phone_2'] ); ?>
 							</a>
 						</li>
 						<li>
-							<a href="tel:<?php echo esc_attr( belgranit_phone_link( $contacts['phone_3'] ) ); ?>" class="font-body text-sm text-gray-400 hover:text-white transition-colors">
+							<a href="tel:<?php echo esc_attr( belgranit_phone_link( $contacts['phone_3'] ) ); ?>" class="font-body text-base text-gray-400 hover:text-white transition-colors">
 								<?php echo esc_html( $contacts['phone_3'] ); ?>
 							</a>
 						</li>
 						<li>
-							<a href="tel:<?php echo esc_attr( belgranit_phone_link( $contacts['phone_4'] ) ); ?>" class="font-body text-sm text-gray-400 hover:text-white transition-colors">
+							<a href="tel:<?php echo esc_attr( belgranit_phone_link( $contacts['phone_4'] ) ); ?>" class="font-body text-base text-gray-400 hover:text-white transition-colors">
 								<?php echo esc_html( $contacts['phone_4'] ); ?> (Производство)
 							</a>
 						</li>
@@ -102,17 +101,15 @@ $contacts = belgranit_get_contacts();
 				</div>
 
 				<!-- Scroll to Top -->
-				<div class="hidden lg:flex items-start">
-					<button id="scroll-to-top" class="flex items-center justify-center w-10 h-10 bg-white rounded-[6px] hover:bg-gray-100 transition-colors" aria-label="Наверх">
-						<svg class="w-5 h-5 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-							<path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
-						</svg>
+				<div class="hidden lg:flex items-start absolute right-0 top-22">
+					<button id="scroll-to-top" class="flex items-center justify-center w-11 h-11 bg-white rounded-[6px] hover:bg-gray-100 transition-colors" aria-label="Наверх">
+						<img src="<?php echo get_template_directory_uri(); ?>/img/arrow-top.svg" alt="arrow top" />
 					</button>
 				</div>
 			</div>
 
 			<!-- Divider -->
-			<div class="border-t border-gray-600 mt-10 pt-6">
+			<div class="border-t border-gray-600 mt-10 pt-4">
 				<div class="flex flex-col sm:flex-row items-center justify-between gap-4">
 					<p class="font-body text-xs text-gray-400">
 						&copy; <?php echo date( 'Y' ); ?> <?php bloginfo( 'name' ); ?>. Все права защищены.
