@@ -12,3 +12,37 @@ License URI: LICENSE
 Text Domain: belgranit
 Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-comments, translation-ready
 */
+
+/* ===========================
+   Catalog Page Styles
+   =========================== */
+
+/* Category sidebar */
+.cat-link { transition: all 0.2s ease; border-radius: 6px; }
+.cat-link.active { background-color: #860000; color: #fff; }
+.cat-link:not(.active):hover { color: #860000; background-color: rgba(134,0,0,0.06); }
+
+/* Product cards */
+.product-card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
+.product-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+/* Sort select */
+.sort-select {
+	appearance: none;
+	-webkit-appearance: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: right 12px center;
+	padding-right: 36px;
+}
+
+/* Pagination */
+.page-num { transition: all 0.2s ease; }
+.page-num.active { background-color: #860000; color: #fff; }
+.page-num:not(.active):hover { background-color: #f5f4f3; }
+
+/* Search placeholder */
+.search-input::placeholder {
+	font-size: 14px;
+	color: #707070;
+}

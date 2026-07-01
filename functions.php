@@ -490,6 +490,352 @@ function belgranit_register_catalog_hero_fields() {
 					),
 				),
 			),
+			array(
+				'key'       => 'field_catalog_consult_tab',
+				'label'     => 'Остались вопросы?',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+			array(
+				'key'          => 'field_catalog_consult_bg',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'catalog_consult_bg',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+			array(
+				'key'          => 'field_catalog_consult_title',
+				'label'        => 'Заголовок',
+				'name'         => 'catalog_consult_title',
+				'type'         => 'text',
+				'default_value' => 'Остались вопросы?',
+			),
+			array(
+				'key'          => 'field_catalog_consult_icon',
+				'label'        => 'Декоративная иконка',
+				'name'         => 'catalog_consult_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+			array(
+				'key'          => 'field_catalog_consult_text',
+				'label'        => 'Текст',
+				'name'         => 'catalog_consult_text',
+				'type'         => 'textarea',
+				'default_value' => 'Оставьте заявку. Менеджер перезвонит в ближайшее время.',
+				'rows'         => 3,
+			),
+			array(
+				'key'          => 'field_catalog_consult_btn_text',
+				'label'        => 'Текст кнопки',
+				'name'         => 'catalog_consult_btn_text',
+				'type'         => 'text',
+				'default_value' => 'Получить консультацию',
+			),
+			array(
+				'key'          => 'field_catalog_consult_btn_link',
+				'label'        => 'Ссылка кнопки',
+				'name'         => 'catalog_consult_btn_link',
+				'type'         => 'url',
+			),
+			array(
+				'key'          => 'field_catalog_consult_features',
+				'label'        => 'Преимущества',
+				'name'         => 'catalog_consult_features',
+				'type'         => 'repeater',
+				'layout'       => 'table',
+				'button_label' => 'Добавить преимущество',
+				'min'          => 1,
+				'max'          => 4,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_catalog_consult_feat_icon',
+						'label'        => 'Иконка',
+						'name'         => 'catalog_consult_feat_icon',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'thumbnail',
+						'library'       => 'all',
+					),
+					array(
+						'key'          => 'field_catalog_consult_feat_title',
+						'label'        => 'Заголовок',
+						'name'         => 'catalog_consult_feat_title',
+						'type'         => 'text',
+					),
+					array(
+						'key'          => 'field_catalog_consult_feat_desc',
+						'label'        => 'Описание',
+						'name'         => 'catalog_consult_feat_desc',
+						'type'         => 'textarea',
+						'rows'         => 2,
+					),
+				),
+			),
+		),
+		'location' => $location,
+	) );
+}
+
+/**
+ * SCF Fields: Models Page
+ */
+add_action( 'acf/init', 'belgranit_register_models_page_fields' );
+function belgranit_register_models_page_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'models' );
+	$page_id = $page ? $page->ID : 0;
+
+	if ( $page_id ) {
+		$location = array(
+			array(
+				array(
+					'param'    => 'page',
+					'operator' => '==',
+					'value'    => (string) $page_id,
+				),
+			),
+		);
+	} else {
+		$location = array(
+			array(
+				array(
+					'param'    => 'post_type',
+					'operator' => '==',
+					'value'    => 'page',
+				),
+			),
+		);
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_models_page',
+		'title'    => 'Настройки страницы «Модели»',
+		'fields'   => array(
+			array(
+				'key'          => 'field_models_hero_bg',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'models_hero_bg',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+			array(
+				'key'          => 'field_models_hero_title',
+				'label'        => 'Заголовок',
+				'name'         => 'models_hero_title',
+				'type'         => 'text',
+				'default_value' => 'Модели',
+			),
+			array(
+				'key'          => 'field_models_hero_subtitle',
+				'label'        => 'Подзаголовок',
+				'name'         => 'models_hero_subtitle',
+				'type'         => 'textarea',
+				'rows'         => 2,
+			),
+		),
+		'location' => $location,
+	) );
+}
+
+/**
+ * SCF Fields: Examples Page
+ */
+add_action( 'acf/init', 'belgranit_register_examples_page_fields' );
+function belgranit_register_examples_page_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'examples' );
+	$page_id = $page ? $page->ID : 0;
+
+	if ( $page_id ) {
+		$location = array(
+			array(
+				array(
+					'param'    => 'page',
+					'operator' => '==',
+					'value'    => (string) $page_id,
+				),
+			),
+		);
+	} else {
+		$location = array(
+			array(
+				array(
+					'param'    => 'post_type',
+					'operator' => '==',
+					'value'    => 'page',
+				),
+			),
+		);
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_examples_page',
+		'title'    => 'Настройки страницы «Примеры работ»',
+		'fields'   => array(
+			array(
+				'key'          => 'field_examples_hero_bg',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'examples_hero_bg',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+			array(
+				'key'          => 'field_examples_hero_title',
+				'label'        => 'Заголовок',
+				'name'         => 'examples_hero_title',
+				'type'         => 'text',
+				'default_value' => 'Примеры работ',
+			),
+			array(
+				'key'          => 'field_examples_hero_subtitle',
+				'label'        => 'Подзаголовок',
+				'name'         => 'examples_hero_subtitle',
+				'type'         => 'textarea',
+				'rows'         => 2,
+			),
+		),
+		'location' => $location,
+	) );
+}
+
+/**
+ * SCF Fields: Contacts Page
+ */
+add_action( 'acf/init', 'belgranit_register_contacts_page_fields' );
+function belgranit_register_contacts_page_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'contacts' );
+	$page_id = $page ? $page->ID : 0;
+
+	if ( $page_id ) {
+		$location = array(
+			array(
+				array(
+					'param'    => 'page',
+					'operator' => '==',
+					'value'    => (string) $page_id,
+				),
+			),
+		);
+	} else {
+		$location = array(
+			array(
+				array(
+					'param'    => 'post_type',
+					'operator' => '==',
+					'value'    => 'page',
+				),
+			),
+		);
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_contacts_page',
+		'title'    => 'Настройки страницы «Контакты»',
+		'fields'   => array(
+			array(
+				'key'          => 'field_contacts_hero_bg',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'contacts_hero_bg',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+			array(
+				'key'          => 'field_contacts_hero_title',
+				'label'        => 'Заголовок',
+				'name'         => 'contacts_hero_title',
+				'type'         => 'text',
+				'default_value' => 'Контакты',
+			),
+			array(
+				'key'          => 'field_contacts_hero_subtitle',
+				'label'        => 'Подзаголовок',
+				'name'         => 'contacts_hero_subtitle',
+				'type'         => 'textarea',
+				'rows'         => 2,
+			),
+		),
+		'location' => $location,
+	) );
+}
+
+/**
+ * SCF Fields: Improvement Page
+ */
+add_action( 'acf/init', 'belgranit_register_improvement_page_fields' );
+function belgranit_register_improvement_page_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	$page = get_page_by_path( 'improvement' );
+	$page_id = $page ? $page->ID : 0;
+
+	if ( $page_id ) {
+		$location = array(
+			array(
+				array(
+					'param'    => 'page',
+					'operator' => '==',
+					'value'    => (string) $page_id,
+				),
+			),
+		);
+	} else {
+		$location = array(
+			array(
+				array(
+					'param'    => 'post_type',
+					'operator' => '==',
+					'value'    => 'page',
+				),
+			),
+		);
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_improvement_page',
+		'title'    => 'Настройки страницы «Благоустройство»',
+		'fields'   => array(
+			array(
+				'key'          => 'field_improvement_hero_bg',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'improvement_hero_bg',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+			array(
+				'key'          => 'field_improvement_hero_title',
+				'label'        => 'Заголовок',
+				'name'         => 'improvement_hero_title',
+				'type'         => 'text',
+				'default_value' => 'Благоустройство',
+			),
+			array(
+				'key'          => 'field_improvement_hero_subtitle',
+				'label'        => 'Подзаголовок',
+				'name'         => 'improvement_hero_subtitle',
+				'type'         => 'textarea',
+				'rows'         => 2,
+			),
 		),
 		'location' => $location,
 	) );
@@ -1423,6 +1769,15 @@ function belgranit_register_consultation_fields() {
 			),
 
 			array(
+				'key'          => 'field_consultation_bg',
+				'label'        => 'Фоновое изображение',
+				'name'         => 'consultation_bg',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+
+			array(
 				'key'          => 'field_consultation_description',
 				'label'        => 'Описание',
 				'name'         => 'consultation_description',
@@ -1575,6 +1930,27 @@ function belgranit_register_popular_products_fields() {
 				'name'         => 'popular_heading',
 				'type'         => 'text',
 				'default_value' => 'Популярные решения',
+			),
+
+			array(
+				'key'          => 'field_popular_icon',
+				'label'        => 'Декоративная иконка',
+				'name'         => 'popular_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'preview_size'  => 'thumbnail',
+				'library'       => 'all',
+			),
+
+			array(
+				'key'          => 'field_popular_products',
+				'label'        => 'Товары',
+				'name'         => 'popular_products',
+				'type'         => 'relationship',
+				'post_type'    => array( 'product' ),
+				'filters'      => array( 'search', 'post_tag', 'tax_tax_cat' ),
+				'max'          => 12,
+				'return_format' => 'id',
 			),
 
 		),

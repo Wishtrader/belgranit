@@ -47,38 +47,6 @@ $order   = isset( $_GET['order'] ) ? sanitize_text_field( $_GET['order'] ) : 'DE
 $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 ?>
 
-<style>
-	/* Category sidebar */
-	.cat-link { transition: all 0.2s ease; border-radius: 6px; }
-	.cat-link.active { background-color: #860000; color: #fff; }
-	.cat-link:not(.active):hover { color: #860000; background-color: rgba(134,0,0,0.06); }
-
-	/* Product cards */
-	.product-card { transition: box-shadow 0.2s ease, transform 0.2s ease; }
-	.product-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transform: translateY(-2px); }
-
-	/* Sort select */
-	.sort-select {
-		appearance: none;
-		-webkit-appearance: none;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-		background-repeat: no-repeat;
-		background-position: right 12px center;
-		padding-right: 36px;
-	}
-
-	/* Pagination */
-	.page-num { transition: all 0.2s ease; }
-	.page-num.active { background-color: #860000; color: #fff; }
-	.page-num:not(.active):hover { background-color: #f5f4f3; }
-
-	/* Search placeholder */
-	.search-input::placeholder {
-		font-size: 14px;
-		color: #707070;
-	}
-</style>
-
 <main id="primary" class="site-main">
 
 	<!-- Hero Banner -->
@@ -298,16 +266,16 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 
 			<!-- Consultation Section -->
 		<?php
-		$consult_bg       = get_field( 'product_consult_bg', 'options' );
-		$consult_title    = get_field( 'product_consult_title', 'options' ) ?: 'Остались вопросы?';
-		$consult_icon     = get_field( 'product_consult_icon', 'options' );
-		$consult_text     = get_field( 'product_consult_text', 'options' ) ?: 'Оставьте заявку. Менеджер перезвонит в ближайшее время.';
-		$consult_btn_text = get_field( 'product_consult_btn_text', 'options' ) ?: 'Получить консультацию';
-		$consult_btn_link = get_field( 'product_consult_btn_link', 'options' ) ?: '#callback';
-		$consult_features = get_field( 'product_consult_features', 'options' );
+		$consult_bg       = $catalog_page_id ? get_field( 'catalog_consult_bg', $catalog_page_id ) : '';
+		$consult_title    = $catalog_page_id ? ( get_field( 'catalog_consult_title', $catalog_page_id ) ?: 'Остались вопросы?' ) : 'Остались вопросы?';
+		$consult_icon     = $catalog_page_id ? get_field( 'catalog_consult_icon', $catalog_page_id ) : '';
+		$consult_text     = $catalog_page_id ? ( get_field( 'catalog_consult_text', $catalog_page_id ) ?: 'Оставьте заявку. Менеджер перезвонит в ближайшее время.' ) : 'Оставьте заявку. Менеджер перезвонит в ближайшее время.';
+		$consult_btn_text = $catalog_page_id ? ( get_field( 'catalog_consult_btn_text', $catalog_page_id ) ?: 'Получить консультацию' ) : 'Получить консультацию';
+		$consult_btn_link = $catalog_page_id ? ( get_field( 'catalog_consult_btn_link', $catalog_page_id ) ?: '#callback' ) : '#callback';
+		$consult_features = $catalog_page_id ? get_field( 'catalog_consult_features', $catalog_page_id ) : array();
 		?>
 
-		<div class="relative py-12 lg:py-20" <?php if ( $consult_bg ) : ?>style="background-image: url('<?php echo esc_url( $consult_bg ); ?>'); background-size: cover; background-position: center;"<?php endif; ?>>
+		<div class="relative py-12 lg:py-20 mt-10 lg:mt-[96px]" <?php if ( $consult_bg ) : ?>style="background-image: url('<?php echo esc_url( $consult_bg ); ?>'); background-size: cover; background-position: center;"<?php endif; ?>>
 
 			<div class="relative max-w-[1200px] mx-auto">
 				<div class="flex flex-col md:flex-row justify-between">
@@ -341,9 +309,9 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 					<?php if ( ! empty( $consult_features ) ) : ?>
 						<div class="space-y-10">
 							<?php foreach ( $consult_features as $feature ) :
-								$feat_icon  = $feature['product_consult_feat_icon'] ?? '';
-								$feat_title = $feature['product_consult_feat_title'] ?? '';
-								$feat_desc  = $feature['product_consult_feat_desc'] ?? '';
+								$feat_icon  = $feature['catalog_consult_feat_icon'] ?? '';
+								$feat_title = $feature['catalog_consult_feat_title'] ?? '';
+								$feat_desc  = $feature['catalog_consult_feat_desc'] ?? '';
 								if ( ! $feat_title ) continue;
 							?>
 								<div class="flex items-center gap-4 lg:w-[390px]">

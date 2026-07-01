@@ -212,6 +212,27 @@ $contacts = belgranit_get_contacts();
 	}
 	</script>
 
+	<script>
+	function popularSlider() {
+		return {
+			currentSlide: 0,
+
+			next() {
+				const maxSlide = Math.ceil(this.$refs.slider.children.length / 4) - 1;
+				if (this.currentSlide < maxSlide) {
+					this.currentSlide++;
+				}
+			},
+
+			prev() {
+				if (this.currentSlide > 0) {
+					this.currentSlide--;
+				}
+			}
+		};
+	}
+	</script>
+
 <?php wp_footer(); ?>
 
 </body>
