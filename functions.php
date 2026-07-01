@@ -712,6 +712,40 @@ function belgranit_register_examples_page_fields() {
 }
 
 /**
+ * SCF Fields: Work Example (Пример работы)
+ */
+add_action( 'acf/init', 'belgranit_register_work_example_fields' );
+function belgranit_register_work_example_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_work_example_fields',
+		'title'    => 'Детали примера работы',
+		'fields'   => array(
+			array(
+				'key'          => 'field_work_example_description',
+				'label'        => 'Описание',
+				'name'         => 'work_example_description',
+				'type'         => 'textarea',
+				'rows'         => 3,
+				'placeholder'  => 'Краткое описание работы',
+			),
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'post_type',
+					'operator' => '==',
+					'value'    => 'work_example',
+				),
+			),
+		),
+	) );
+}
+
+/**
  * SCF Fields: Contacts Page
  */
 add_action( 'acf/init', 'belgranit_register_contacts_page_fields' );
@@ -1208,11 +1242,100 @@ function belgranit_register_granite_type() {
 }
 
 /**
+ * Custom Post Type: Примеры работ
+ */
+add_action( 'init', 'belgranit_register_work_example' );
+function belgranit_register_work_example() {
+	$labels = array(
+		'name'                  => 'Примеры работ',
+		'singular_name'         => 'Пример работы',
+		'menu_name'             => 'Примеры работ',
+		'add_new'               => 'Добавить работу',
+		'add_new_item'          => 'Добавить новый пример работы',
+		'edit_item'             => 'Редактировать пример работы',
+		'new_item'              => 'Новый пример работы',
+		'view_item'             => 'Посмотреть пример работы',
+		'search_items'          => 'Искать примеры работ',
+		'not_found'             => 'Примеры работ не найдены',
+		'not_found_in_trash'    => 'Примеры работ не найдены в корзине',
+		'all_items'             => 'Все примеры работ',
+		'archives'              => 'Архив примеров работ',
+	);
+
+	$args = array(
+		'labels'             => $labels,
+		'public'             => true,
+		'publicly_queryable' => true,
+		'show_ui'            => true,
+		'show_in_menu'       => true,
+		'show_in_rest'       => true,
+		'query_var'          => true,
+		'rewrite'            => array( 'slug' => 'work-examples' ),
+		'capability_type'    => 'post',
+		'has_archive'        => true,
+		'hierarchical'       => false,
+		'menu_position'      => 27,
+		'menu_icon'          => 'dashicons-format-gallery',
+		'supports'           => array( 'title', 'thumbnail', 'editor' ),
+	);
+
+	register_post_type( 'work_example', $args );
+}
+
+/**
+ * Custom Taxonomy: Категории работ
+ */
+add_action( 'init', 'belgranit_register_work_category' );
+function belgranit_register_work_category() {
+	$labels = array(
+		'name'              => 'Категории работ',
+		'singular_name'     => 'Категория работы',
+		'search_items'      => 'Искать категории',
+		'all_items'         => 'Все категории',
+		'parent_item'       => 'Родительская категория',
+		'parent_item_colon' => 'Родительская категория:',
+		'edit_item'         => 'Редактировать категорию',
+		'update_item'       => 'Обновить категорию',
+		'add_new_item'      => 'Добавить новую категорию',
+		'new_item_name'     => 'Название новой категории',
+		'menu_name'         => 'Категории работ',
+	);
+
+	$args = array(
+		'hierarchical'      => true,
+		'labels'            => $labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'show_in_rest'      => true,
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'work-category' ),
+	);
+
+	register_taxonomy( 'work_category', array( 'work_example' ), $args );
+
+	// Создаем предустановленные категории
+	$categories = array(
+		'Памятники'     => 'Памятники',
+		'Благоустройство' => 'Благоустройство',
+		'Ограды'         => 'Ограды',
+		'Оформление'     => 'Оформление',
+	);
+
+	foreach ( $categories as $name => $term_name ) {
+		if ( ! term_exists( $name, 'work_category' ) ) {
+			wp_insert_term( $name, 'work_category' );
+		}
+	}
+}
+
+/**
  * Flush rewrite rules on theme activation
  */
 add_action( 'after_switch_theme', 'belgranit_flush_rewrite_rules' );
 function belgranit_flush_rewrite_rules() {
 	belgranit_register_granite_type();
+	belgranit_register_work_example();
+	belgranit_register_work_category();
 	flush_rewrite_rules();
 }
 
@@ -1373,6 +1496,86 @@ function belgranit_duplicate_granite_type() {
 	}
 
 	wp_redirect( admin_url( 'edit.php?post_type=granite_type' ) );
+	exit;
+}
+
+/**
+ * Duplicate Work Example
+ */
+add_filter( 'post_row_actions', 'belgranit_work_example_row_actions', 10, 2 );
+function belgranit_work_example_row_actions( $actions, $post ) {
+	if ( $post->post_type !== 'work_example' ) {
+		return $actions;
+	}
+
+	$url = wp_nonce_url(
+		admin_url( 'admin.php?action=duplicate_work_example_as_draft&post=' . $post->ID ),
+		'duplicate_work_example_' . $post->ID
+	);
+
+	$actions['duplicate'] = '<a href="' . esc_url( $url ) . '" title="Дублировать" rel="permalink">Дублировать</a>';
+
+	return $actions;
+}
+
+add_action( 'admin_action_duplicate_work_example_as_draft', 'belgranit_duplicate_work_example' );
+function belgranit_duplicate_work_example() {
+	if ( ! ( isset( $_GET['post'] ) && current_user_can( 'edit_posts' ) ) ) {
+		wp_die( 'Нет доступа' );
+	}
+
+	$post_id = absint( $_GET['post'] );
+	$post    = get_post( $post_id );
+
+	if ( ! $post || $post->post_type !== 'work_example' ) {
+		wp_die( 'Запись не найдена' );
+	}
+
+	check_admin_referer( 'duplicate_work_example_' . $post_id );
+
+	$current_user = wp_get_current_user();
+	$new_post = array(
+		'comment_status' => $post->comment_status,
+		'ping_status'    => $post->ping_status,
+		'post_author'    => $current_user->ID,
+		'post_content'   => $post->post_content,
+		'post_excerpt'   => $post->post_excerpt,
+		'post_name'      => $post->post_name,
+		'post_parent'    => $post->post_parent,
+		'post_password'  => $post->post_password,
+		'post_status'    => 'draft',
+		'post_title'     => $post->post_title . ' (копия)',
+		'post_type'      => $post->post_type,
+		'to_ping'        => $post->to_ping,
+		'menu_order'     => $post->menu_order,
+	);
+
+	$new_post_id = wp_insert_post( $new_post );
+
+	if ( $new_post_id ) {
+		// Копируем все мета-поля
+		$post_meta = get_post_meta( $post_id );
+		foreach ( $post_meta as $key => $values ) {
+			foreach ( $values as $value ) {
+				add_post_meta( $new_post_id, $key, $value );
+			}
+		}
+
+		// Копируем миниатюру
+		if ( has_post_thumbnail( $post_id ) ) {
+			$thumbnail_id = get_post_thumbnail_id( $post_id );
+			set_post_thumbnail( $new_post_id, $thumbnail_id );
+		}
+
+		// Копируем таксономию (категории)
+		$terms = get_the_terms( $post_id, 'work_category' );
+		if ( $terms && ! is_wp_error( $terms ) ) {
+			$term_ids = wp_list_pluck( $terms, 'term_id' );
+			wp_set_object_terms( $new_post_id, $term_ids, 'work_category' );
+		}
+	}
+
+	wp_redirect( admin_url( 'edit.php?post_type=work_example' ) );
 	exit;
 }
 
