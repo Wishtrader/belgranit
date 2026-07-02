@@ -238,13 +238,19 @@ function belgranit_phone_link( $phone ) {
  */
 function belgranit_get_contacts() {
 	return array(
-		'address'   => get_field( 'contact_address', 'option' ) ?: 'г. Могилев, Пушкинский проспект 18',
-		'address_2' => get_field( 'contact_address_2', 'option' ) ?: '(бывший Октябрьский универмаг)',
-		'phone_1'   => get_field( 'contact_phone_1', 'option' ) ?: '+375 (29) 640-53-77',
-		'phone_2'   => get_field( 'contact_phone_2', 'option' ) ?: '+375 (29) 783-75-70',
-		'phone_3'   => get_field( 'contact_phone_3', 'option' ) ?: '+375 (222) 70-70-76',
-		'phone_4'   => get_field( 'contact_phone_4', 'option' ) ?: '+375 (29) 222-24-39',
-		'email'     => get_field( 'contact_email', 'option' ) ?: 'info@belgranit.by',
+		'address'          => get_field( 'contact_address', 'option' ) ?: 'г. Могилев, Пушкинский проспект 18',
+		'address_2'        => get_field( 'contact_address_2', 'option' ) ?: '(бывший Октябрьский универмаг)',
+		'phone_1'          => get_field( 'contact_phone_1', 'option' ) ?: '+375 (29) 640-53-77',
+		'phone_2'          => get_field( 'contact_phone_2', 'option' ) ?: '+375 (29) 783-75-70',
+		'phone_3'          => get_field( 'contact_phone_3', 'option' ) ?: '+375 (222) 70-70-76',
+		'phone_4'          => get_field( 'contact_phone_4', 'option' ) ?: '+375 (29) 222-24-39',
+		'email'            => get_field( 'contact_email', 'option' ) ?: 'info@belgranit.by',
+		'hours_weekday'    => get_field( 'contact_hours_weekday', 'option' ) ?: '10:00 - 19:00',
+		'hours_sat'        => get_field( 'contact_hours_sat', 'option' ) ?: '10:00 - 17:00',
+		'hours_sun'        => get_field( 'contact_hours_sun', 'option' ) ?: '10:00 - 16:00',
+		'hours_production' => get_field( 'contact_hours_production', 'option' ) ?: '08:00 - 17:00',
+		'map_address'      => get_field( 'contact_map_address', 'option' ) ?: 'Могилев, Пушкинский проспект 18',
+		'map_balloon'      => get_field( 'contact_map_balloon', 'option' ) ?: 'Белгранит',
 	);
 }
 
@@ -343,6 +349,73 @@ function belgranit_register_contact_fields() {
 				'name'         => 'contact_email',
 				'type'         => 'email',
 				'default_value' => 'info@belgranit.by',
+			),
+
+			// Tab: Work Hours
+			array(
+				'key'       => 'field_contact_tab_hours',
+				'label'     => 'Режим работы',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_contact_hours_weekday',
+				'label'        => 'Пн-Пт',
+				'name'         => 'contact_hours_weekday',
+				'type'         => 'text',
+				'default_value' => '10:00 - 19:00',
+			),
+
+			array(
+				'key'          => 'field_contact_hours_sat',
+				'label'        => 'Сб',
+				'name'         => 'contact_hours_sat',
+				'type'         => 'text',
+				'default_value' => '10:00 - 17:00',
+			),
+
+			array(
+				'key'          => 'field_contact_hours_sun',
+				'label'        => 'Вс',
+				'name'         => 'contact_hours_sun',
+				'type'         => 'text',
+				'default_value' => '10:00 - 16:00',
+			),
+
+			array(
+				'key'          => 'field_contact_hours_production',
+				'label'        => 'Производство (Пн-Пт)',
+				'name'         => 'contact_hours_production',
+				'type'         => 'text',
+				'default_value' => '08:00 - 17:00',
+			),
+
+			// Tab: Map
+			array(
+				'key'       => 'field_contact_tab_map',
+				'label'     => 'Карта',
+				'name'      => '',
+				'type'      => 'tab',
+				'placement' => 'top',
+			),
+
+			array(
+				'key'          => 'field_contact_map_address',
+				'label'        => 'Адрес для карты',
+				'name'         => 'contact_map_address',
+				'type'         => 'text',
+				'default_value' => 'Могилев, Пушкинский проспект 18',
+				'instructions' => 'Полный адрес для поиска на Яндекс Картах. Изменение этого поля автоматически перемещает метку на карте.',
+			),
+
+			array(
+				'key'          => 'field_contact_map_balloon',
+				'label'        => 'Текст на метке',
+				'name'         => 'contact_map_balloon',
+				'type'         => 'text',
+				'default_value' => 'Белгранит',
 			),
 
 		),
