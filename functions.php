@@ -473,37 +473,75 @@ function belgranit_add_contact_options_page() {
 			'redirect'   => false,
 			'icon_id'    => 'dashicons-cart',
 			'position'   => 31,
-		) );
+	) );
 	}
 }
 
 /**
- * Fix menu item URLs for product categories
+ * Remove /product-category/ base from product category URLs
+ */
+add_action( 'init', function() {
+	$terms = get_terms( array(
+		'taxonomy'   => 'product_cat',
+		'hide_empty' => false,
+	) );
+	if ( is_wp_error( $terms ) || empty( $terms ) ) {
+		return;
+	}
+	foreach ( $terms as $term ) {
+		$slug = $term->slug;
+		add_rewrite_rule(
+			'^' . $slug . '/?$',
+			'index.php?product_cat=' . $slug,
+			'top'
+		);
+		add_rewrite_rule(
+			'^' . $slug . '/page/([0-9]{1,})/?$',
+			'index.php?product_cat=' . $slug . '&paged=$matches[1]',
+			'top'
+		);
+	}
+} );
+
+add_filter( 'term_link', function( $url, $term ) {
+	if ( $term instanceof WP_Term && 'product_cat' === $term->taxonomy ) {
+		$url = home_url( '/' . $term->slug . '/' );
+	}
+	return $url;
+}, 10, 2 );
+
+/**
+ * Fix menu item URLs for product categories and pages
  */
 add_filter( 'wp_nav_menu_objects', function( $items ) {
-	$menu_fixes = array(
-		'Ограды' => 'product_cat',
-		'Памятники' => 'product_cat',
-		'Благоустройство' => 'product_cat',
-		'Оформление' => 'product_cat',
+	$page_fixes = array(
+		'Благоустройство' => 'improvement',
 	);
 
-	$slug_map = array(
-		'Ограды'         => 'ogradi',
-		'Памятники'      => 'pamyatniki',
-		'Благоустройство' => 'blagoustrojstvo',
-		'Оформление'     => 'oformlenie',
+	$product_cat_fixes = array(
+		'Ограды'    => 'ogradi',
+		'Памятники' => 'pamyatniki',
+		'Оформление' => 'oformlenie',
 	);
+
+	$current_url = trailingslashit( $_SERVER['REQUEST_URI'] ?? '' );
 
 	foreach ( $items as $item ) {
-		if ( isset( $menu_fixes[ $item->title ] ) ) {
-			$slug = $slug_map[ $item->title ] ?? '';
-			if ( $slug ) {
-				$term = get_term_by( 'slug', $slug, $menu_fixes[ $item->title ] );
-				if ( $term && ! is_wp_error( $term ) ) {
-					$item->url = get_term_link( $term );
-				}
+		if ( isset( $page_fixes[ $item->title ] ) ) {
+			$page = get_page_by_path( $page_fixes[ $item->title ] );
+			if ( $page ) {
+				$item->url = get_permalink( $page );
 			}
+		} elseif ( isset( $product_cat_fixes[ $item->title ] ) ) {
+			$term = get_term_by( 'slug', $product_cat_fixes[ $item->title ], 'product_cat' );
+			if ( $term && ! is_wp_error( $term ) ) {
+				$item->url = get_term_link( $term );
+			}
+		}
+
+		$item_url = trailingslashit( wp_parse_url( $item->url, PHP_URL_PATH ) ?: '/' );
+		if ( $item_url === $current_url ) {
+			$item->classes[] = 'current-menu-item';
 		}
 	}
 
@@ -929,6 +967,60 @@ function belgranit_register_models_page_fields() {
 				'type'         => 'textarea',
 				'rows'         => 2,
 			),
+
+			// Section: Content
+			array(
+				'key'          => 'field_models_content_title',
+				'label'        => 'Заголовок секции контента',
+				'name'         => 'models_content_title',
+				'type'         => 'text',
+				'default_value' => 'Модели памятников',
+			),
+			array(
+				'key'          => 'field_models_content_text_1',
+				'label'        => 'Текст абзаца 1',
+				'name'         => 'models_content_text_1',
+				'type'         => 'wysiwyg',
+				'tabs'         => 'text',
+				'toolbar'      => 'basic',
+				'media_upload' => 0,
+			),
+			array(
+				'key'          => 'field_models_content_text_2',
+				'label'        => 'Текст абзаца 2',
+				'name'         => 'models_content_text_2',
+				'type'         => 'wysiwyg',
+				'tabs'         => 'text',
+				'toolbar'      => 'basic',
+				'media_upload' => 0,
+			),
+			array(
+				'key'          => 'field_models_content_text_3',
+				'label'        => 'Текст абзаца 3',
+				'name'         => 'models_content_text_3',
+				'type'         => 'wysiwyg',
+				'tabs'         => 'text',
+				'toolbar'      => 'basic',
+				'media_upload' => 0,
+			),
+			array(
+				'key'          => 'field_models_content_text_4',
+				'label'        => 'Текст абзаца 4',
+				'name'         => 'models_content_text_4',
+				'type'         => 'wysiwyg',
+				'tabs'         => 'text',
+				'toolbar'      => 'basic',
+				'media_upload' => 0,
+			),
+			array(
+				'key'          => 'field_models_content_text_5',
+				'label'        => 'Текст абзаца 5',
+				'name'         => 'models_content_text_5',
+				'type'         => 'wysiwyg',
+				'tabs'         => 'text',
+				'toolbar'      => 'basic',
+				'media_upload' => 0,
+			),
 		),
 		'location' => $location,
 	) );
@@ -1251,6 +1343,126 @@ function belgranit_register_improvement_page_fields() {
 				'name'         => 'improvement_hero_subtitle',
 				'type'         => 'textarea',
 				'rows'         => 2,
+			),
+
+			// Section: Works Slider
+			array(
+				'key'          => 'field_improvement_works_title',
+				'label'        => 'Заголовок секции работ',
+				'name'         => 'improvement_works_title',
+				'type'         => 'text',
+				'default_value' => 'Примеры работ по благоустройству',
+			),
+			array(
+				'key'          => 'field_improvement_works_icon',
+				'label'        => 'Иконка-декор',
+				'name'         => 'improvement_works_icon',
+				'type'         => 'image',
+				'return_format' => 'url',
+				'library'       => 'all',
+			),
+
+			// Section: Content
+			array(
+				'key'          => 'field_improvement_content_title',
+				'label'        => 'Заголовок секции контента',
+				'name'         => 'improvement_content_title',
+				'type'         => 'text',
+				'default_value' => 'Благоустройство мест захоронения',
+			),
+			array(
+				'key'          => 'field_improvement_content_text_1',
+				'label'        => 'Текст абзаца 1',
+				'name'         => 'improvement_content_text_1',
+				'type'         => 'wysiwyg',
+				'tabs'         => 'text',
+				'toolbar'      => 'basic',
+				'media_upload' => 0,
+			),
+			array(
+				'key'          => 'field_improvement_content_text_2',
+				'label'        => 'Текст абзаца 2',
+				'name'         => 'improvement_content_text_2',
+				'type'         => 'wysiwyg',
+				'tabs'         => 'text',
+				'toolbar'      => 'basic',
+				'media_upload' => 0,
+			),
+			array(
+				'key'          => 'field_improvement_content_text_3',
+				'label'        => 'Текст абзаца 3',
+				'name'         => 'improvement_content_text_3',
+				'type'         => 'wysiwyg',
+				'tabs'         => 'text',
+				'toolbar'      => 'basic',
+				'media_upload' => 0,
+			),
+
+			// Section: Services
+			array(
+				'key'          => 'field_improvement_services_repeater',
+				'label'        => 'Блоки услуг',
+				'name'         => 'improvement_services',
+				'type'         => 'repeater',
+				'layout'       => 'block',
+				'button_label' => 'Добавить блок',
+				'min'          => 1,
+				'max'          => 10,
+				'sub_fields'   => array(
+					array(
+						'key'          => 'field_improvement_svc_title',
+						'label'        => 'Заголовок',
+						'name'         => 'improvement_svc_title',
+						'type'         => 'text',
+					),
+					array(
+						'key'          => 'field_improvement_svc_subtitle',
+						'label'        => 'Подзаголовок',
+						'name'         => 'improvement_svc_subtitle',
+						'type'         => 'textarea',
+						'rows'         => 2,
+					),
+					array(
+						'key'          => 'field_improvement_svc_image',
+						'label'        => 'Изображение',
+						'name'         => 'improvement_svc_image',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size'  => 'medium',
+						'library'       => 'all',
+					),
+					array(
+						'key'          => 'field_improvement_svc_btn_text',
+						'label'        => 'Текст кнопки',
+						'name'         => 'improvement_svc_btn_text',
+						'type'         => 'text',
+						'default_value' => 'Рассчитать стоимость',
+					),
+					array(
+						'key'          => 'field_improvement_svc_items',
+						'label'        => 'Услуги',
+						'name'         => 'improvement_svc_items',
+						'type'         => 'repeater',
+						'layout'       => 'table',
+						'button_label' => 'Добавить услугу',
+						'min'          => 1,
+						'max'          => 15,
+						'sub_fields'   => array(
+							array(
+								'key'      => 'field_improvement_svc_item_name',
+								'label'    => 'Название',
+								'name'     => 'improvement_svc_item_name',
+								'type'     => 'text',
+							),
+							array(
+								'key'      => 'field_improvement_svc_item_price',
+								'label'    => 'Цена',
+								'name'     => 'improvement_svc_item_price',
+								'type'     => 'text',
+							),
+						),
+					),
+				),
 			),
 		),
 		'location' => $location,
@@ -1718,7 +1930,93 @@ function belgranit_flush_rewrite_rules() {
 	belgranit_register_granite_type();
 	belgranit_register_work_example();
 	belgranit_register_work_category();
+	belgranit_register_model();
+	belgranit_register_model_category();
 	flush_rewrite_rules();
+}
+
+/**
+ * Custom Post Type: Модели
+ */
+add_action( 'init', 'belgranit_register_model' );
+function belgranit_register_model() {
+	$labels = array(
+		'name'                  => 'Модели',
+		'singular_name'         => 'Модель',
+		'menu_name'             => 'Модели',
+		'add_new'               => 'Добавить модель',
+		'add_new_item'          => 'Добавить новую модель',
+		'edit_item'             => 'Редактировать модель',
+		'new_item'              => 'Новая модель',
+		'view_item'             => 'Посмотреть модель',
+		'search_items'          => 'Искать модели',
+		'not_found'             => 'Модели не найдены',
+		'not_found_in_trash'    => 'Модели не найдены в корзине',
+		'all_items'             => 'Все модели',
+		'archives'              => 'Архив моделей',
+	);
+
+	$args = array(
+		'labels'             => $labels,
+		'public'             => true,
+		'publicly_queryable' => true,
+		'show_ui'            => true,
+		'show_in_menu'       => true,
+		'show_in_rest'       => true,
+		'query_var'          => true,
+		'rewrite'            => array( 'slug' => 'model-archive' ),
+		'capability_type'    => 'post',
+		'has_archive'        => false,
+		'hierarchical'       => false,
+		'menu_position'      => 28,
+		'menu_icon'          => 'dashicons-car',
+		'supports'           => array( 'title', 'thumbnail' ),
+	);
+
+	register_post_type( 'model', $args );
+}
+
+/**
+ * Custom Taxonomy: Категории моделей
+ */
+add_action( 'init', 'belgranit_register_model_category' );
+function belgranit_register_model_category() {
+	$labels = array(
+		'name'              => 'Категории моделей',
+		'singular_name'     => 'Категория моделей',
+		'search_items'      => 'Искать категории',
+		'all_items'         => 'Все категории',
+		'parent_item'       => 'Родительская категория',
+		'parent_item_colon' => 'Родительская категория:',
+		'edit_item'         => 'Редактировать категорию',
+		'update_item'       => 'Обновить категорию',
+		'add_new_item'      => 'Добавить новую категорию',
+		'new_item_name'     => 'Название новой категории',
+		'menu_name'         => 'Категории моделей',
+	);
+
+	$args = array(
+		'hierarchical'      => true,
+		'labels'            => $labels,
+		'show_ui'           => true,
+		'show_admin_column' => true,
+		'show_in_rest'      => true,
+		'query_var'         => true,
+		'rewrite'           => array( 'slug' => 'model-category' ),
+	);
+
+	register_taxonomy( 'model_category', array( 'model' ), $args );
+
+	$categories = array(
+		'Одинарные памятники',
+		'Двойные памятники',
+	);
+
+	foreach ( $categories as $name ) {
+		if ( ! term_exists( $name, 'model_category' ) ) {
+			wp_insert_term( $name, 'model_category' );
+		}
+	}
 }
 
 /**
@@ -2466,6 +2764,15 @@ function belgranit_register_consultation_fields() {
 				'min'          => 1,
 				'max'          => 6,
 				'sub_fields'   => array(
+					array(
+						'key'          => 'field_consultation_benefit_icon',
+						'label'        => 'Иконка',
+						'name'         => 'consultation_benefit_icon',
+						'type'         => 'image',
+						'return_format' => 'url',
+						'preview_size' => 'thumbnail',
+						'library'      => 'uploadedTo',
+					),
 					array(
 						'key'          => 'field_consultation_benefit_highlight',
 						'label'        => 'Выделенный текст',

@@ -236,6 +236,7 @@ if ( $current_category ) {
 
 						<a
 							href="<?php echo esc_url( $consult_btn_link ); ?>"
+							data-popup="consult"
 							class="inline-flex items-center justify-center gap-2 bg-[#860000] hover:bg-red-700 lg:w-[344px] text-white text-base rounded-[6px] px-8 py-4 transition-colors font-body"
 						>
 							<?php echo esc_html( $consult_btn_text ); ?>

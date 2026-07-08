@@ -213,7 +213,7 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 							echo esc_html( $cta_words[ $detected_parent_slug ] ?? 'памятник' );
 						?> выбрать?</h4>
 						<p class="font-body text-[14px] text-white/85 leading-[1.4]">Оставьте заявку. Мы поможем подобрать вариант с учетом бюджета, пожеланий и особенностей участка</p>
-						<a href="#consultation-form" class="block text-center bg-white text-[#272727] font-manrope font-semibold text-base py-2 rounded-[6px] hover:bg-gray-50 transition-colors">
+						<a href="#callback" data-popup="consult" class="block text-center bg-white text-[#272727] font-manrope font-semibold text-base py-2 rounded-[6px] hover:bg-gray-50 transition-colors">
 							Получить консультацию
 						</a>
 					</div>
@@ -371,6 +371,7 @@ $search_query = isset( $_GET['s'] ) ? sanitize_text_field( $_GET['s'] ) : '';
 
 						<a
 							href="<?php echo esc_url( $consult_btn_link ); ?>"
+							data-popup="consult"
 							class="inline-flex items-center justify-center gap-2 bg-[#860000] hover:bg-red-700 lg:w-[344px] text-white text-base rounded-[6px] px-8 py-4 transition-colors font-body"
 						>
 							<?php echo esc_html( $consult_btn_text ); ?>

@@ -18,9 +18,12 @@ $default_bg = get_template_directory_uri() . '/img/hero-bg.jpg';
 
 	<!-- Content -->
 	<div class="relative max-w-[1200px] md:mx-auto px-2 mx-[10px] mt-[160px] lg:mt-[220px] text-center flex flex-col items-center justify-start border-[1px] border-white pt-10 pb-8 md:pb-0">
+		<div class="lg:-mt-14 px-4 lg:backdrop-blur-sm rounded-full">
+			<img src="<?php echo get_template_directory_uri(); ?>/img/top-icon.svg" alt="icon" class="" />
+		</div>
 
 		<!-- Heading -->
-		<h1 class="font-heading text-[36px] lg:text-[56px] font-normal text-white !leading-[120%] mb-6 lg:mb-11">
+		<h1 class="font-heading text-[36px] lg:text-[56px] font-normal text-white !leading-[120%] mb-6 lg:mb-11 lg:mt-7">
 			<?php echo wp_kses_post( $hero_heading ); ?>
 		</h1>
 
@@ -32,9 +35,9 @@ $default_bg = get_template_directory_uri() . '/img/hero-bg.jpg';
 
 		<!-- Buttons -->
 		<div class="relative w-full sm:w-auto z-10 flex flex-col sm:flex-row items-center justify-center gap-4 lg:gap-5 lg:mb-[-27px] lg:overflow-hidden lg:px-5 lg:backdrop-blur-sm lg:rounded-[24px]">
-			<a href="#calculator" class="w-full sm:w-auto inline-flex items-center justify-center bg-[#860000] hover:bg-red-600 text-white text-base font-semibold uppercase tracking-wide px-8 py-4 rounded-[6px] transition-colors">
-				Рассчитать стоимость
-			</a>
+		<a href="#callback" data-popup="calculate" class="w-full sm:w-auto inline-flex items-center justify-center bg-[#860000] hover:bg-[#650d10] text-white text-base font-semibold uppercase tracking-wide px-8 py-4 rounded-[6px] transition-colors">
+			Рассчитать стоимость
+		</a>
 			<a href="#catalog" class="w-full sm:w-auto inline-flex items-center justify-center bg-white/80 hover:bg-gray-100 text-gray-900 text-base font-semibold uppercase tracking-wide px-8 py-4 rounded-[6px] transition-colors">
 				Перейти в каталог
 			</a>

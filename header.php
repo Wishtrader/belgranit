@@ -28,7 +28,7 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
         extend: {
           colors: {
             brand: '#860000',
-            brand-dark: '#650d10',
+            'brand-dark': '#650d10',
             ink: '#182028',
             charcoal: '#272727',
             muted: '#f5f4f3',
@@ -166,24 +166,24 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 
 		<!-- ========== MAIN HEADER ========== -->
 		<div id="main-header" class="bg-white/50 backdrop-blur-xl">
-			<div class="max-w-[1200px] mx-auto flex items-center justify-between h-[72px]">
+			<div class="max-w-[1200px] px-4 mx-auto flex items-center justify-between h-[72px]">
 
 				<!-- Logo -->
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center shrink-0 h-10 sm:h-12 lg:h-14" aria-label="<?php bloginfo( 'name' ); ?>">
-					<?php belgranit_logo( 'h-auto w-[190px] lg:w-[203px]' ); ?>
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center shrink-0 h-14" aria-label="<?php bloginfo( 'name' ); ?>">
+					<?php belgranit_logo( 'h-auto w-[233px]' ); ?>
 				</a>
 
 				<!-- Desktop Navigation -->
-				<nav id="site-navigation" class="desktop-nav hidden lg:flex items-center gap-1 xl:gap-2" aria-label="Основная навигация">
+				<nav id="site-navigation" class="desktop-nav hidden lg:flex items-center gap-1 xl:gap-1" aria-label="Основная навигация">
 					<?php
 					wp_nav_menu(
 						array(
 							'theme_location' => 'menu-1',
 							'menu_id'        => 'primary-menu',
-							'menu_class'     => 'flex gap-2 xl:gap-[30px] items-center list-none m-0 p-0',
+							'menu_class'     => 'flex gap-1 xl:gap-2 items-center list-none m-0 p-0',
 							'container'      => false,
 							'depth'          => 1,
-							'link_before'    => '<span class="flex px-2 py-2 text-[14px] font-body font-bold leading-[120%] tracking-normal uppercase text-gray-900 hover:text-red-700 transition-colors cursor-pointer">',
+							'link_before'    => '<span class="flex px-2 py-2 text-[14px] font-body font-bold leading-[120%] tracking-normal uppercase text-gray-900 hover:text-red-700 transition-colors cursor-pointer whitespace-nowrap">',
 							'link_after'     => '</span>',
 						)
 					);
@@ -215,8 +215,8 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 			<!-- Mobile header inside menu -->
 			<div class="flex items-center justify-between px-4 sm:px-6 h-16 sm:h-20 bg-white">
 				<!-- Logo -->
-				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center h-8 sm:h-10" aria-label="<?php bloginfo( 'name' ); ?>">
-					<?php belgranit_logo( 'h-full w-auto' ); ?>
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="flex items-center h-14 sm:h-14" aria-label="<?php bloginfo( 'name' ); ?>">
+					<?php belgranit_logo( 'h-auto w-[233px]' ); ?>
 				</a>
 
 				<div class="flex items-center gap-2">
