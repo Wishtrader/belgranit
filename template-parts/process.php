@@ -42,7 +42,7 @@ endif;
 				</div>
 				<img src="<?php echo get_template_directory_uri(); ?>/img/bullet.svg" alt="bullet" class="h-2.5 w-2.5 mx-auto mt-4" />
 				<?php if ( $title ) : ?>
-					<h3 class="mt-4 font-manrope text-2xl font-bold leading-[1.2] text-[#272727]"><?php echo esc_html( $title ); ?></h3>
+					<h3 class="mt-4 font-manrope text-lg lg:text-2xl font-bold leading-[1.2] text-[#272727]"><?php echo esc_html( $title ); ?></h3>
 				<?php endif; ?>
 				<?php if ( $description ) : ?>
 					<p class="mt-2 text-sm leading-[1.4] text-charcoal"><?php echo esc_html( $description ); ?></p>

@@ -274,7 +274,7 @@ get_header(); ?>
 	$consult_features = get_field( 'product_consult_features', 'options' );
 	?>
 
-	<div class="relative py-12 lg:py-20" <?php if ( $consult_bg ) : ?>style="background-image: url('<?php echo esc_url( $consult_bg ); ?>'); background-size: cover; background-position: center;"<?php endif; ?>>
+	<div class="relative py-12 lg:py-20 mt-10 lg:mt-[76px] px-[10px] text-center lg:text-start" <?php if ( $consult_bg ) : ?>style="background-image: url('<?php echo esc_url( $consult_bg ); ?>'); background-size: cover; background-position: center;"<?php endif; ?>>
 
 		<div class="relative max-w-[1200px] mx-auto">
 			<div class="flex flex-col md:flex-row justify-between">
@@ -286,19 +286,19 @@ get_header(); ?>
 					</h2>
 
 					<?php if ( $consult_icon ) : ?>
-						<div class="flex items-center gap-3 mb-6">
+						<div class="flex items-center justify-center lg:justify-start gap-3 mb-6">
 							<img src="<?php echo esc_url( $consult_icon ); ?>" alt="" class="">
 						</div>
 					<?php endif; ?>
 
-					<p class="text-gray-600 font-body leading-[1.4] mb-10 max-w-md">
+					<p class="text-gray-600 font-body text-center lg:text-left leading-[1.2] mb-10 max-w-md">
 						<?php echo esc_html( $consult_text ); ?>
 					</p>
 
 					<a
 						href="<?php echo esc_url( $consult_btn_link ); ?>"
 						data-popup="consult"
-						class="inline-flex items-center justify-center gap-2 bg-[#860000] hover:bg-red-700 lg:w-[344px] text-white text-base rounded-[6px] px-8 py-4 transition-colors font-body"
+						class="inline-flex items-center justify-center gap-2 bg-[#860000] hover:bg-red-700 lg:w-[344px] w-full text-white text-base rounded-[6px] px-8 py-4 transition-colors font-body mb-8 lg:mb-0"
 					>
 						<?php echo esc_html( $consult_btn_text ); ?>
 					<img src="<?php echo get_template_directory_uri(); ?>/img/arr2.svg" alt="arrow" class="" />
@@ -319,8 +319,8 @@ get_header(); ?>
 										<img src="<?php echo esc_url( $feat_icon ); ?>" alt="" class="w-8 h-8">
 								</div>
 								<div>
-									<h3 class="font-manrope font-bold text-[#182028] text-lg mb-1"><?php echo esc_html( $feat_title ); ?></h3>
-									<p class="text-gray-500 font-body text-sm leading-[1.4] max-w-[250px]"><?php echo esc_html( $feat_desc ); ?></p>
+								<h3 class="font-manrope text-left font-bold text-[#182028] text-lg mb-1"><?php echo esc_html( $feat_title ); ?></h3>
+								<p class="text-gray-500 text-left font-body text-sm leading-[1.4] max-w-[250px]"><?php echo esc_html( $feat_desc ); ?></p>
 								</div>
 							</div>
 						<?php endforeach; ?>

@@ -29,9 +29,9 @@ $cta_target     = $cta_link['target'] ?? '_self';
           <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $heading ); ?>" class="w-full lg:h-[453px] lg:w-[588px]">
         <?php endif; ?>
       </div>
-      <div class="xl:border xl:border-r-[#724246]/20 xl:h-[453px] md:mx-5 xl:mx-20"></div>
+      <div class="hidden xl:block xl:border xl:border-r-[#724246]/20 h-[453px] mx-20"></div>
       <div>
-        <h3 class="font-manrope text-2xl font-bold text-charcoal"><?php echo esc_html( $features_title ); ?></h3>
+        <h3 class="font-manrope text-[22px] lg:text-2xl font-bold text-charcoal mt-4 lg:mt-0"><?php echo esc_html( $features_title ); ?></h3>
         <?php if ( ! empty( $features ) ) : ?>
           <ul class="mt-8 space-y-5 lg:-ml-3">
             <?php foreach ( $features as $item ) :
@@ -47,7 +47,7 @@ $cta_target     = $cta_link['target'] ?? '_self';
                 <?php endif; ?>
               <div>
                 <?php if ( $title ) : ?>
-                  <p class="font-manrope text-lg font-bold text-ink"><?php echo esc_html( $title ); ?></p>
+                  <p class="font-manrope text-lg leading-[1.2] font-bold text-ink"><?php echo esc_html( $title ); ?></p>
                 <?php endif; ?>
                 <?php if ( $description ) : ?>
                   <p class="mt-2 text-sm leading-[1.2] text-[#182028]"><?php echo esc_html( $description ); ?></p>

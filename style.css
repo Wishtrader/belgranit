@@ -46,3 +46,46 @@ Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-com
 	font-size: 14px;
 	color: #707070;
 }
+
+/* ===========================
+   Swiper Portfolio Slider
+   =========================== */
+@media (max-width: 1023px) {
+	#works {
+		overflow-x: hidden;
+	}
+	#portfolio-swiper {
+		overflow: hidden;
+		margin-left: -16px;
+		margin-right: -16px;
+	}
+	#portfolio-swiper .swiper-wrapper {
+		margin-left: 0;
+	}
+	#portfolio-swiper .swiper-slide {
+		width: 80%;
+	}
+	#portfolio-swiper .swiper-pagination {
+		position: relative;
+		margin-top: 24px;
+	}
+	#portfolio-swiper .swiper-pagination-bullet {
+		width: 10px;
+		height: 10px;
+		background: #d1d5db;
+		opacity: 1;
+		transition: background-color 0.2s;
+	}
+	#portfolio-swiper .swiper-pagination-bullet-active {
+		background: #860000;
+	}
+}
+
+/* ===========================
+   Catalog Hero Mobile
+   =========================== */
+@media (max-width: 1023px) {
+	.catalog-hero {
+		background-image: url('img/catalog-mobile.png') !important;
+	}
+}

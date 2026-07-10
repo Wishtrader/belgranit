@@ -20,7 +20,7 @@ if ( empty( $items ) ) :
 endif;
 ?>
 <!-- Categories -->
-<section id="catalog" class="mx-auto max-w-[1200px] sm:px-[10px] lg:px-0 py-16 lg:py-20">
+<section id="catalog" class="mx-auto max-w-[1200px] px-[10px] lg:px-0 py-16 lg:py-20">
   <div class="mb-11 flex flex-col items-center gap-5">
     <h2 class="font-playfair font-bold text-center text-[26px] text-ink lg:text-4xl"><?php echo esc_html( $heading ); ?></h2>
     <img src="<?php echo esc_url( get_template_directory_uri() ); ?>/img/divider.svg" alt="" class="h-[22px] w-[114px]" width="114" height="22">

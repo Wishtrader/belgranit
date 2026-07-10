@@ -17,13 +17,13 @@ $default_bg = get_template_directory_uri() . '/img/hero-bg.jpg';
 <section class="w-full lg:h-[800px] lg:max-h-screen overflow-hidden bg-[url('<?php echo esc_url( $hero_bg_image ); ?>')] bg-cover bg-bottom lg:bg-center pb-10">
 
 	<!-- Content -->
-	<div class="relative max-w-[1200px] md:mx-auto px-2 mx-[10px] mt-[160px] lg:mt-[220px] text-center flex flex-col items-center justify-start border-[1px] border-white pt-10 pb-8 md:pb-0">
-		<div class="lg:-mt-14 px-4 lg:backdrop-blur-sm rounded-full">
+	<div class="relative max-w-[1200px] md:mx-auto px-2 mx-[10px] mt-[120px] lg:mt-[160px] lg:mt-[220px] text-center flex flex-col items-center justify-start border-[1px] border-white pt-10 pb-8 md:pb-0">
+		<div class="-mt-14 px-4 backdrop-blur-sm rounded-full">
 			<img src="<?php echo get_template_directory_uri(); ?>/img/top-icon.svg" alt="icon" class="" />
 		</div>
 
 		<!-- Heading -->
-		<h1 class="font-heading text-[36px] lg:text-[56px] font-normal text-white !leading-[120%] mb-6 lg:mb-11 lg:mt-7">
+		<h1 class="font-heading text-[36px] lg:text-[56px] font-normal text-white !leading-[120%] mt-5 mb-6 lg:mb-11 lg:mt-7">
 			<?php echo wp_kses_post( $hero_heading ); ?>
 		</h1>
 

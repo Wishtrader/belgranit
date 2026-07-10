@@ -88,9 +88,9 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 	}
 
 	/* Active menu item underline */
-	.desktop-nav .current-menu-item > a > span {
+	.desktop-nav li.is-active > a > span {
 		text-decoration: underline;
-		text-decoration-color: #650D10;
+		text-decoration-color: #860000;
 		text-decoration-thickness: 1px;
 		text-underline-offset: 5px;
 	}
@@ -98,6 +98,24 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 	/* Remove right padding from last menu item */
 	.desktop-nav ul li:last-child a span {
 		padding-right: 0;
+	}
+
+	/* Dropdown menus */
+	.has-dropdown {
+		position: static;
+	}
+	.mega-dropdown {
+		left: 0;
+		top: 100%;
+	}
+	.has-dropdown:hover > .mega-dropdown,
+	.has-dropdown:focus-within > .mega-dropdown {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+	.has-dropdown:hover > a svg {
+		transform: rotate(180deg);
 	}
 
 	/* Header scroll transitions */
@@ -184,19 +202,81 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 
 			<!-- Desktop Navigation -->
 			<nav id="site-navigation" class="desktop-nav hidden lg:flex items-center gap-1 xl:gap-1" aria-label="Основная навигация">
-				<?php
-				wp_nav_menu(
-				array(
-				'theme_location' => 'menu-1',
-				'menu_id'        => 'primary-menu',
-				'menu_class'     => 'flex gap-1 xl:gap-2 items-center list-none m-0 p-0',
-				'container'      => false,
-				'depth'          => 1,
-				'link_before'    => '<span class="flex px-2 py-2 text-[14px] font-body font-bold leading-[120%] tracking-normal uppercase text-gray-900 hover:text-red-700 transition-colors cursor-pointer whitespace-nowrap">',
-				'link_after'     => '</span>',
-				)
-				);
-				?>
+				<ul class="flex gap-1 xl:gap-2 items-center list-none m-0 p-0">
+					<?php
+					$menu_data = array(
+						array( 'title' => 'Памятники',      'slug' => 'pamyatniki',    'type' => 'product_cat', 'has_children' => true ),
+						array( 'title' => 'Благоустройство', 'slug' => 'improvement',    'type' => 'page',        'has_children' => false ),
+						array( 'title' => 'Ограды',          'slug' => 'ogradi',         'type' => 'product_cat', 'has_children' => true ),
+						array( 'title' => 'Оформление',      'slug' => 'oformlenie',     'type' => 'product_cat', 'has_children' => true ),
+						array( 'title' => 'Модели',          'slug' => 'models',         'type' => 'page',        'has_children' => false ),
+						array( 'title' => 'Примеры работ',   'slug' => 'examples',       'type' => 'page',        'has_children' => false ),
+						array( 'title' => 'Контакты',        'slug' => 'contacts',       'type' => 'page',        'has_children' => false ),
+					);
+
+					foreach ( $menu_data as $item ) :
+						$url = '#';
+						$term = null;
+
+						if ( 'product_cat' === $item['type'] ) {
+							$term = get_term_by( 'slug', $item['slug'], 'product_cat' );
+							if ( $term && ! is_wp_error( $term ) ) {
+								$url = get_term_link( $term );
+								if ( is_wp_error( $url ) ) $url = '#';
+							}
+						} else {
+							$page = get_page_by_path( $item['slug'] );
+							if ( $page ) {
+								$url = get_permalink( $page );
+							}
+						}
+
+						$children = array();
+						if ( $item['has_children'] && $term && ! is_wp_error( $term ) ) {
+							$child_terms = get_terms( array(
+								'taxonomy'   => 'product_cat',
+								'parent'     => $term->term_id,
+								'hide_empty' => false,
+							) );
+							if ( ! is_wp_error( $child_terms ) && ! empty( $child_terms ) ) {
+								$children = $child_terms;
+							}
+						}
+
+						$is_active = false;
+						if ( 'product_cat' === $item['type'] && $term ) {
+							$is_active = is_tax( 'product_cat', $term->term_id );
+						} else {
+							$is_active = is_page( $item['slug'] );
+						}
+					?>
+					<li class="relative <?php echo ! empty( $children ) ? 'has-dropdown' : ''; ?> <?php echo $is_active ? 'is-active' : ''; ?>">
+						<a href="<?php echo esc_url( $url ); ?>" class="flex px-2 py-2 text-[14px] font-body font-bold leading-[120%] tracking-normal uppercase text-gray-900 hover:text-red-700 transition-colors cursor-pointer whitespace-nowrap <?php echo $is_active ? 'text-red-700' : ''; ?>">
+							<span><?php echo esc_html( $item['title'] ); ?></span>
+							<?php if ( ! empty( $children ) ) : ?>
+							<svg class="w-3 h-3 ml-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+								<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+							</svg>
+							<?php endif; ?>
+						</a>
+						<?php if ( ! empty( $children ) ) : ?>
+						<div class="mega-dropdown absolute left-0 top-full pt-3 opacity-0 invisible transition-all duration-200 pointer-events-none z-50">
+							<div class="bg-white rounded-lg shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-gray-100 py-2 min-w-[200px]">
+								<a href="<?php echo esc_url( $url ); ?>" class="block px-4 py-2 font-body text-sm font-bold text-gray-900 hover:text-red-700 hover:bg-gray-50 transition-colors">
+									Все <?php echo esc_html( mb_strtolower( $item['title'] ) ); ?>
+								</a>
+								<div class="border-t border-gray-100 my-1"></div>
+								<?php foreach ( $children as $child ) : ?>
+								<a href="<?php echo esc_url( get_term_link( $child ) ); ?>" class="block px-4 py-2 font-body text-sm text-gray-700 hover:text-red-700 hover:bg-gray-50 transition-colors">
+									<?php echo esc_html( $child->name ); ?>
+								</a>
+								<?php endforeach; ?>
+							</div>
+						</div>
+						<?php endif; ?>
+					</li>
+					<?php endforeach; ?>
+				</ul>
 			</nav>
 
 			<!-- Mobile Controls -->

@@ -163,7 +163,9 @@ $contacts = belgranit_get_contacts();
 			<p id="popup-desc" class="font-body font-light text-base text-[#182028] leading-[1.4] mb-3 pr-4">
 				Оставьте ваши контакты. Мы свяжемся с вами в ближайшее время и ответим на все интересующие вас вопросы.
 			</p>
-			<form id="callback-form" class="space-y-5">
+			<form id="callback-form" class="space-y-5" method="post">
+				<input type="hidden" name="nonce" value="<?php echo wp_create_nonce( 'belgranit_form_nonce' ); ?>">
+				<input type="hidden" name="form_type" value="callback">
 				<input type="text" name="name" placeholder="Имя" class="w-full p-4 border border-[#6f6f6f]/30 rounded-[6px] font-body text-[14px] text-ink placeholder:text-gray-400 focus:outline-none focus:border-[#860000] transition-colors">
 				<input type="tel" id="callback-phone" name="phone" placeholder="+375 (__) ___-__-__" class="w-full p-4 border border-[#6f6f6f]/30 rounded-[6px] font-body text-[14px] text-ink placeholder:text-gray-400 focus:outline-none focus:border-[#860000] transition-colors">
 				<textarea name="comment" rows="4" placeholder="Комментарий" class="w-full p-4 border border-[#6f6f6f]/30 rounded-[6px] font-body text-[14px] text-ink placeholder:text-gray-400 focus:outline-none focus:border-[#860000] transition-colors"></textarea>
@@ -421,6 +423,62 @@ $contacts = belgranit_get_contacts();
 	declineBtn.addEventListener('click', function() {
 		localStorage.setItem(COOKIE_KEY, 'declined');
 		hideBanner();
+	});
+})();
+</script>
+
+<script>
+(function() {
+	var thankYouUrl = '<?php echo esc_url( home_url( '/thank-you/' ) ); ?>';
+	var ajaxUrl = '<?php echo admin_url( 'admin-ajax.php' ); ?>';
+	var nonce = '<?php echo wp_create_nonce( 'belgranit_form_nonce' ); ?>';
+
+	function sendForm(form) {
+		var formData = new FormData(form);
+		formData.append('action', 'belgranit_form_submit');
+		formData.append('nonce', nonce);
+
+		var btn = form.querySelector('button[type="submit"]');
+		var originalText = btn.innerHTML;
+		btn.innerHTML = 'Отправка...';
+		btn.disabled = true;
+
+		fetch(ajaxUrl, {
+			method: 'POST',
+			body: formData
+		})
+		.then(function(r) { return r.json(); })
+		.then(function(res) {
+			if (res.success) {
+				window.location.href = thankYouUrl;
+			} else {
+				alert(res.data.message || 'Ошибка отправки');
+				btn.innerHTML = originalText;
+				btn.disabled = false;
+			}
+		})
+		.catch(function() {
+			alert('Ошибка сети. Попробуйте позже.');
+			btn.innerHTML = originalText;
+			btn.disabled = false;
+		});
+	}
+
+	// Callback form
+	var callbackForm = document.getElementById('callback-form');
+	if (callbackForm) {
+		callbackForm.addEventListener('submit', function(e) {
+			e.preventDefault();
+			sendForm(callbackForm);
+		});
+	}
+
+	// Consultation forms
+	document.querySelectorAll('form[action="#"]').forEach(function(form) {
+		form.addEventListener('submit', function(e) {
+			e.preventDefault();
+			sendForm(form);
+		});
 	});
 })();
 </script>

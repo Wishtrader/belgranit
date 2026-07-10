@@ -155,9 +155,111 @@ function belgranit_widgets_init() {
 			'after_widget'  => '</section>',
 			'before_title'  => '<h2 class="widget-title">',
 			'after_title'   => '</h2>',
-		)
-	);
+	) );
 }
+
+// Thank You Page Options
+add_action( 'init', 'belgranit_thank_you_fields' );
+function belgranit_thank_you_fields() {
+	if ( ! function_exists( 'acf_add_local_field_group' ) ) {
+		return;
+	}
+
+	acf_add_local_field_group( array(
+		'key'      => 'group_thank_you_options',
+		'title'    => 'Страница "Спасибо"',
+		'fields'   => array(
+			array(
+				'key'          => 'field_thank_you_bg_desktop',
+				'label'        => 'Фоновое изображение (десктоп)',
+				'name'         => 'thank_you_bg_desktop',
+				'type'         => 'image',
+				'return_format' => 'url',
+			),
+			array(
+				'key'          => 'field_thank_you_bg_mobile',
+				'label'        => 'Фоновое изображение (мобайл)',
+				'name'         => 'thank_you_bg_mobile',
+				'type'         => 'image',
+				'return_format' => 'url',
+			),
+			array(
+				'key'          => 'field_thank_you_heading',
+				'label'        => 'Заголовок',
+				'name'         => 'thank_you_heading',
+				'type'         => 'text',
+				'default_value' => 'Спасибо, мы получили вашу заявку!',
+			),
+			array(
+				'key'          => 'field_thank_you_divider',
+				'label'        => 'Декоративный элемент',
+				'name'         => 'thank_you_divider',
+				'type'         => 'image',
+				'return_format' => 'url',
+			),
+			array(
+				'key'          => 'field_thank_you_text',
+				'label'        => 'Описание',
+				'name'         => 'thank_you_text',
+				'type'         => 'text',
+				'default_value' => 'Мы свяжемся с вами в ближайшее время.',
+			),
+		),
+		'location' => array(
+			array(
+				array(
+					'param'    => 'page_template',
+					'operator' => '==',
+					'value'    => 'thank-you.php',
+				),
+			),
+		),
+	) );
+}
+
+// Form submission handler
+add_action( 'wp_ajax_belgranit_form_submit', 'belgranit_form_submit' );
+add_action( 'wp_ajax_nopriv_belgranit_form_submit', 'belgranit_form_submit' );
+function belgranit_form_submit() {
+	if ( ! wp_verify_nonce( $_POST['nonce'] ?? '', 'belgranit_form_nonce' ) ) {
+		wp_send_json_error( array( 'message' => 'Ошибка безопасности' ) );
+	}
+
+	$name    = sanitize_text_field( $_POST['name'] ?? '' );
+	$phone   = sanitize_text_field( $_POST['phone'] ?? '' );
+	$comment = sanitize_textarea_field( $_POST['comment'] ?? '' );
+	$form    = sanitize_text_field( $_POST['form_type'] ?? '' );
+
+	if ( empty( $name ) || empty( $phone ) ) {
+		wp_send_json_error( array( 'message' => 'Заполните обязательные поля' ) );
+	}
+
+	$admin_email = get_option( 'admin_email' );
+	$site_name   = get_bloginfo( 'name' );
+	$form_label  = $form === 'consult' ? 'Консультация' : 'Заказ звонка';
+
+	$subject = "Новая заявка \"{$form_label}\" с сайта {$site_name}";
+
+	$message  = "Имя: {$name}\n";
+	$message .= "Телефон: {$phone}\n";
+	if ( $comment ) {
+		$message .= "Комментарий: {$comment}\n";
+	}
+
+	$headers = array(
+		'Content-Type: text/plain; charset=UTF-8',
+		"From: {$site_name} <{$admin_email}>",
+	);
+
+	$sent = wp_mail( $admin_email, $subject, $message, $headers );
+
+	if ( $sent ) {
+		wp_send_json_success( array( 'message' => 'Заявка отправлена' ) );
+	} else {
+		wp_send_json_error( array( 'message' => 'Ошибка отправки. Попробуйте позже.' ) );
+	}
+}
+
 add_action( 'widgets_init', 'belgranit_widgets_init' );
 
 /**
@@ -167,11 +269,19 @@ function belgranit_scripts() {
 	wp_enqueue_style( 'belgranit-style', get_stylesheet_uri(), array(), _S_VERSION );
 	wp_style_add_data( 'belgranit-style', 'rtl', 'replace' );
 
+	wp_enqueue_style( 'swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css', array(), '11.0.0' );
+	wp_enqueue_script( 'swiper', 'https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js', array(), '11.0.0', true );
+
 	wp_enqueue_script( 'belgranit-navigation', get_template_directory_uri() . '/js/navigation.js', array(), _S_VERSION, true );
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
 	}
+
+	wp_localize_script( 'belgranit-navigation', 'belgranitAjax', array(
+		'url'   => admin_url( 'admin-ajax.php' ),
+		'nonce' => wp_create_nonce( 'belgranit_form_nonce' ),
+	) );
 }
 add_action( 'wp_enqueue_scripts', 'belgranit_scripts' );
 
@@ -473,7 +583,7 @@ function belgranit_add_contact_options_page() {
 			'redirect'   => false,
 			'icon_id'    => 'dashicons-cart',
 			'position'   => 31,
-	) );
+		) );
 	}
 }
 
