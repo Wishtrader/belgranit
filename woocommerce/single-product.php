@@ -28,7 +28,7 @@ get_header();
 
 		<!-- Breadcrumb -->
 		<div class="max-w-[1200px] mx-auto pt-6 mt-[72px] lg:mt-[146px]">
-			<nav class="text-xs text-[#6F6F6F] font-body !font-light" aria-label="Хлебные крошки">
+			<nav class="text-xs text-[#6F6F6F] font-body !font-light px-2.5" aria-label="Хлебные крошки">
 				<ol class="flex flex-wrap items-center gap-1 list-none m-0 p-0">
 					<li><a href="<?php echo esc_url(home_url('/')); ?>" class="hover:text-red-700 transition-colors">Главная</a></li>
 					<?php
@@ -60,11 +60,11 @@ get_header();
 		</div>
 
 		<!-- Product Section -->
-		<div class="max-w-[1200px] mx-auto lg:pt-16 lg:pb-24">
+		<div class="max-w-[1200px] mx-auto lg:pt-16 lg:pb-24 px-2.5 lg:px-0">
 			<div class="flex flex-col md:flex-row lg:gap-[64px]">
 
 				<!-- Left: Gallery -->
-				<div class="mt-4 lg:mt-0 px-0" x-data="{ active: 0 }">
+				<div class="mt-4 lg:mt-0 pb-8 lg:pb-0 lg:px-0" x-data="{ active: 0 }">
 					<div class="relative rounded-[24px] overflow-hidden mb-2 h-[340px] w-auto lg:w-[486px] lg:h-[457px]">
 						<?php foreach ($all_images as $index => $image_id):
     						$image_url = wp_get_attachment_image_url($image_id, 'large');
@@ -106,7 +106,7 @@ get_header();
 				</div>
 
 				<!-- Right: Info -->
-				<div class="bg-[#F5F4F3] p-8 shadow-md">
+				<div class="bg-[#F5F4F3] p-[10px] pt-2.5 lg:p-8 shadow-md pb-10">
 					<h1 class="font-playfair text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-4">
 						<?php the_title(); ?>
 					</h1>
@@ -146,14 +146,14 @@ get_header();
 						<svg class="w-8 h-8 text-red-800 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
 						</svg>
-						<p class="text-sm text-gray-600 font-body leading-relaxed">
+						<p class="text-sm text-gray-600 font-body leading-[1.2]">
 							Данная форма памятника может быть изготовлена в любых размерах
 						</p>
 					</div>
 
 					<a
 						href="#callback"
-						class="block w-full text-center bg-[#860000] max-w-[260px] hover:bg-red-700 text-white text-base font-normal rounded-[6px] py-4 transition-colors font-body"
+						class="block w-full text-center bg-[#860000] max-w-[340px] hover:bg-red-700 text-white text-base font-normal rounded-[6px] py-4 transition-colors font-body"
 					>
 						Оставить заявку
 					</a>
@@ -185,12 +185,12 @@ get_header();
 				<?php if ($svc_bg_image): ?>
 					<div class="absolute inset-0"></div>
 				<?php endif; ?>
-				<div class="relative max-w-[1200px] mx-auto">
+				<div class="relative max-w-[1200px] mx-auto px-[10px]">
 					<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
 					<?php if (!empty($install_items)): ?>
 						<!-- Installation Card -->
-						<div class="bg-white rounded-[16px] p-6 sm:p-10 shadow-sm border border-gray-100 flex flex-col">
+						<div class="bg-white rounded-[16px] p-[10px] lg:p-6 sm:p-10 shadow-sm border border-gray-100 flex flex-col">
 							<div class="flex items-center gap-3 mb-6">
 								<?php if ($install_icon): ?>
 									<img src="<?php echo esc_url($install_icon); ?>" alt="" class="w-11 h-11">
@@ -237,7 +237,7 @@ get_header();
 
 					<?php if (!empty($art_items)): ?>
 						<!-- Art Design Card -->
-						<div class="bg-white rounded-[16px] p-6 sm:p-10 shadow-sm border border-gray-100 flex flex-col">
+						<div class="bg-white rounded-[16px] p-2.5 lg:p-6 sm:p-10 shadow-sm border border-gray-100 flex flex-col">
 							<div class="flex items-center gap-3 mb-6">
 								<?php if ($art_icon): ?>
 									<img src="<?php echo esc_url($art_icon); ?>" alt="" class="w-10 h-10">
@@ -299,7 +299,7 @@ get_header();
 		$granite_query = new WP_Query($granite_args);
 
 		if ($granite_query->have_posts()): ?>
-			<div class="max-w-[1200px] mx-auto py-8 lg:py-20">
+			<div class="max-w-[1200px] mx-auto py-4 lg:py-20 px-2.5 lg:px-0">
 				<!-- Title -->
 				<div class="text-center mb-11">
 					<h2 class="font-playfair text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-4">
@@ -372,34 +372,39 @@ get_header();
 						</div>
 					</div>
 
-					<!-- Mobile: Swipe slider -->
-					<div class="md:hidden">
-						<div class="overflow-hidden">
-							<div class="flex transition-transform duration-300 ease-out"
-								:style="'transform: translateX(-' + (mobileIndex * 75) + '%)'"
-								x-ref="mobileSlider"
-								@touchstart="touchStart($event)"
-								@touchmove="touchMove($event)"
-								@touchend="touchEnd($event)">
-								<?php foreach ($all_granite as $index => $item): ?>
-									<div class="w-[75%] flex-shrink-0 pr-4">
-										<div class="text-center">
-											<div class="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-3">
-												<?php if ($item['image']): ?>
-													<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
-    													esc_attr($item['title'])
-													; ?>" class="w-full h-full object-cover">
-												<?php else: ?>
-													<div class="w-full h-full bg-gray-200"></div>
-												<?php endif; ?>
-											</div>
-											<p class="font-body text-sm text-ink font-medium"><?php echo esc_html($item['title']); ?></p>
+					<!-- Mobile: Swiper slider (2 per row) -->
+					<div class="swiper md:hidden" id="granite-swiper">
+						<div class="swiper-wrapper">
+							<?php foreach ($all_granite as $item): ?>
+								<div class="swiper-slide">
+									<div class="text-center">
+										<div class="aspect-square overflow-hidden bg-gray-100 mb-3">
+											<?php if ($item['image']): ?>
+												<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
+    												esc_attr($item['title'])
+												; ?>" class="w-full h-full object-cover">
+											<?php else: ?>
+												<div class="w-full h-full bg-gray-200"></div>
+											<?php endif; ?>
 										</div>
+										<p class="font-body text-sm text-ink font-medium"><?php echo esc_html($item['title']); ?></p>
 									</div>
-								<?php endforeach; ?>
-							</div>
+								</div>
+							<?php endforeach; ?>
 						</div>
 					</div>
+
+					<script>
+					document.addEventListener('DOMContentLoaded', function() {
+						var graniteSwiperEl = document.getElementById('granite-swiper');
+						if (!graniteSwiperEl) return;
+
+						new Swiper('#granite-swiper', {
+							slidesPerView: 2,
+							spaceBetween: 12,
+						});
+					});
+					</script>
 
 					<!-- Dots -->
 					<?php if ($slide_count > 1): ?>
@@ -618,47 +623,45 @@ get_header();
 						</div>
 					</div>
 
-					<!-- Mobile: 2 per slide -->
-					<div class="md:hidden overflow-hidden">
-						<div class="flex transition-transform duration-500 ease-in-out"
-							:style="'transform: translateX(-' + (currentSlide * 100) + '%)'">
-							<?php
-
-							$mobile_per_slide = 2;
-							$mobile_slide_count = (int) ceil($total / $mobile_per_slide);
-							for ($s = 0; $s < $mobile_slide_count; $s++): ?>
-								<div class="w-full flex-shrink-0">
-									<div class="grid grid-cols-2 gap-3">
-										<?php for ($i = 0; $i < $mobile_per_slide; $i++):
-    										$idx = ($s * $mobile_per_slide) + $i;
-    										if ($idx >= $total)
-        										break;
-    										$item = $all_products[$idx];
-    										?>
-											<a href="<?php echo
-    											esc_url($item['link'])
-											; ?>" class="group block bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
-												<div class="aspect-square overflow-hidden bg-gray-50 p-2">
-													<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
-    													esc_attr($item['title'])
-													; ?>" class="w-full h-full object-contain">
-												</div>
-												<div class="p-3">
-													<h3 class="font-body text-xs font-semibold text-ink mb-2 line-clamp-2 min-h-[32px]"><?php echo
-    													esc_html($item['title'])
-													; ?></h3>
-													<div class="w-full h-px bg-gray-200 mb-2"></div>
-													<p class="font-body text-xs text-gray-500">Цена: <span class="text-red-800 font-bold text-sm"><?php echo
-    													wp_strip_all_tags($item['price'])
-													; ?></span></p>
-												</div>
-											</a>
-										<?php endfor; ?>
-									</div>
+					<!-- Mobile: Swiper slider (2 per row) -->
+					<div class="swiper md:hidden" id="related-swiper">
+						<div class="swiper-wrapper">
+							<?php foreach ($all_products as $item): ?>
+								<div class="swiper-slide">
+									<a href="<?php echo
+										esc_url($item['link'])
+										; ?>" class="group block bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+										<div class="aspect-square overflow-hidden bg-gray-50 p-2">
+											<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
+												esc_attr($item['title'])
+												; ?>" class="w-full h-full object-contain">
+										</div>
+										<div class="p-3">
+											<h3 class="font-body text-xs font-semibold text-ink mb-2 line-clamp-2 min-h-[32px]"><?php echo
+												esc_html($item['title'])
+												; ?></h3>
+											<div class="w-full h-px bg-gray-200 mb-2"></div>
+											<p class="font-body text-xs text-gray-500">Цена: <span class="text-red-800 font-bold text-sm"><?php echo
+												wp_strip_all_tags($item['price'])
+												; ?></span></p>
+										</div>
+									</a>
 								</div>
-							<?php endfor; ?>
+							<?php endforeach; ?>
 						</div>
 					</div>
+
+					<script>
+					document.addEventListener('DOMContentLoaded', function() {
+						var relatedSwiperEl = document.getElementById('related-swiper');
+						if (!relatedSwiperEl) return;
+
+						new Swiper('#related-swiper', {
+							slidesPerView: 2,
+							spaceBetween: 12,
+						});
+					});
+					</script>
 
 					<!-- Dots -->
 					<?php if ($slide_count > 1): ?>

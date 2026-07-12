@@ -45,8 +45,8 @@ get_header(); ?>
 	$services = $page_id ? get_field('improvement_services', $page_id) : array();
 
 	if (!empty($services)): ?>
-	<section class="py-12 lg:py-20">
-		<div class="mx-auto max-w-[1200px] px-4 xl:px-0 space-y-8">
+	<section class="py-6 lg:py-20">
+		<div class="mx-auto max-w-[1200px] px-2.5 xl:px-0 space-y-6 lg:space-y-8">
 			<?php foreach ($services as $index => $block):
     			$svc_title = $block['improvement_svc_title'] ?? '';
     			$svc_subtitle = $block['improvement_svc_subtitle'] ?? '';
@@ -60,7 +60,7 @@ get_header(); ?>
 
     			$is_odd = ($index % 2) === 0;
     			?>
-			<div class="rounded-[8px] bg-[#F5F4F3] p-6 lg:p-10">
+			<div class="rounded-[8px] bg-[#F5F4F3] p-2.5 lg:p-10">
 				<div class="flex flex-col<?php echo $is_odd ? ' lg:flex-row' : ' lg:flex-row-reverse'; ?> gap-8 lg:gap-12">
 
 					<!-- Image Column -->
@@ -80,17 +80,17 @@ get_header(); ?>
 					<!-- Content Column -->
 					<div class="flex-1">
 						<div class="mb-4 flex items-start gap-3">
-							<span class="mt-2 block h-2 w-2 shrink-0 rotate-45 bg-[#860000]"></span>
+							<span class="mt-2 lg:mt-3 block h-2 w-2 shrink-0 rotate-45 bg-[#860000]"></span>
 							<div>
-								<h2 class="font-playfair text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-ink leading-[1.3]">
+								<h2 class="font-!playfair text-[22px] sm:text-[26px] lg:text-[28px] font-medium text-ink leading-[1.3]">
 									<?php echo esc_html($svc_title); ?>
 								</h2>
 								<?php if ($svc_subtitle): ?>
-									<p class="mt-3 text-sm text-[#4c4c4c] font-body leading-[1.5]">
+									<p class="mt-3 lg:-ml-5 text-sm lg:text-base text-[#4c4c4c] font-body leading-[1.5]">
 										<?php echo esc_html($svc_subtitle); ?>
 									</p>
 								<?php endif; ?>
-								<div class="mt-5 h-px w-12 bg-[#860000]"></div>
+								<div class="lg:-ml-5 mt-5 h-px w-12 bg-[#860000]"></div>
 							</div>
 						</div>
 
@@ -102,8 +102,8 @@ get_header(); ?>
     								if (!$item_name)
         								continue;
     								?>
-									<div class="flex items-center justify-between border-b border-gray-200 py-4">
-										<span class="text-[14px] text-[#272727] font-body"><?php echo esc_html($item_name); ?></span>
+									<div class="flex items-center justify-between border-b border-gray-200 py-3">
+										<span class="text-[14px] text-[#272727] !font-semibold font-body"><?php echo esc_html($item_name); ?></span>
 										<?php if ($item_price): ?>
 											<span class="ml-4 shrink-0 text-[14px] font-bold text-[#272727] font-body"><?php echo
     											esc_html($item_price)
@@ -364,7 +364,7 @@ get_header(); ?>
 	<section class="py-12 lg:py-20">
 		<div class="mx-auto max-w-[1200px] px-4 xl:px-0">
 			<?php if ($content_title): ?>
-				<h2 class="font-playfair text-[22px] sm:text-[26px] lg:text-[28px] font-bold text-ink leading-[1.3] mb-6">
+				<h2 class="font-manrope text-[18px] lg:text-[24px] font-bold text-ink leading-[1.3] mb-6">
 					<?php echo esc_html($content_title); ?>
 				</h2>
 			<?php endif; ?>

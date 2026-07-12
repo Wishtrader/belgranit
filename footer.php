@@ -113,13 +113,7 @@ $contacts = belgranit_get_contacts();
 					</ul>
 				</div>
 
-				<!-- Scroll to Top -->
-				<div class="hidden lg:flex items-start absolute right-0 top-22">
-					<button id="scroll-to-top" class="flex items-center justify-center w-11 h-11 bg-white rounded-[6px] hover:bg-gray-100 transition-colors" aria-label="Наверх">
-						<img src="<?php echo get_template_directory_uri(); ?>/img/arrow-top.svg" alt="arrow top" />
-					</button>
-				</div>
-			</div>
+		</div>
 
 			<!-- Divider -->
 			<div class="border-t border-gray-600 mt-10 pt-4">
@@ -139,14 +133,13 @@ $contacts = belgranit_get_contacts();
 			</div>
 		</div>
 
-		<!-- Mobile Scroll to Top -->
-		<div class="lg:hidden fixed bottom-6 right-6 z-40">
-			<button id="scroll-to-top-mobile" class="flex items-center justify-center w-10 h-10 bg-white rounded-[6px] shadow-lg hover:bg-gray-100 transition-colors" aria-label="Наверх">
-				<svg class="w-5 h-5 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
-				</svg>
-			</button>
-		</div>
+		<!-- Scroll to Top -->
+		<button id="scroll-to-top" class="fixed bottom-6 right-6 z-40 hidden flex items-center justify-center w-10 h-10 bg-white rounded-[6px] shadow-lg hover:bg-gray-100 transition-colors" aria-label="Наверх">
+			<svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<path d="M12 19V5" stroke="#860000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+				<path d="M5 12L12 5L19 12" stroke="#860000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+			</svg>
+		</button>
 	</footer><!-- #colophon -->
 </div><!-- #page -->
 
@@ -190,14 +183,21 @@ $contacts = belgranit_get_contacts();
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 
-		var btnDesktop = document.getElementById('scroll-to-top');
-		var btnMobile  = document.getElementById('scroll-to-top-mobile');
+		var btn = document.getElementById('scroll-to-top');
 
-		if (btnDesktop) {
-			btnDesktop.addEventListener('click', scrollToTop);
-		}
-		if (btnMobile) {
-			btnMobile.addEventListener('click', scrollToTop);
+		if (btn) {
+			btn.addEventListener('click', scrollToTop);
+
+			function toggleBtn() {
+				if (window.scrollY > window.innerHeight) {
+					btn.classList.remove('hidden');
+				} else {
+					btn.classList.add('hidden');
+				}
+			}
+
+			toggleBtn();
+			window.addEventListener('scroll', toggleBtn, { passive: true });
 		}
 	})();
 	</script>
@@ -206,31 +206,6 @@ $contacts = belgranit_get_contacts();
 	function graniteSlider() {
 		return {
 			currentSlide: 0,
-			mobileIndex: 0,
-			touchStartX: 0,
-			touchEndX: 0,
-
-			touchStart(e) {
-				this.touchStartX = e.changedTouches[0].screenX;
-			},
-
-			touchMove(e) {
-				this.touchEndX = e.changedTouches[0].screenX;
-			},
-
-			touchEnd(e) {
-				this.touchEndX = e.changedTouches[0].screenX;
-				const diff = this.touchStartX - this.touchEndX;
-				const maxIndex = this.$refs.mobileSlider.children.length - 1;
-
-				if (Math.abs(diff) > 50) {
-					if (diff > 0 && this.mobileIndex < maxIndex) {
-						this.mobileIndex++;
-					} else if (diff < 0 && this.mobileIndex > 0) {
-						this.mobileIndex--;
-					}
-				}
-			}
 		};
 	}
 	</script>

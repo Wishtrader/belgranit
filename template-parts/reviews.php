@@ -26,16 +26,33 @@ $cta_target     = $cta_link['target'] ?? '_self';
 			<p class="text-base text-[#272727]"><?php echo esc_html( $description ); ?></p>
 		</div>
 		<?php if ( ! empty( $images ) ) : ?>
-		<div class="grid gap-1 lg:grid-cols-<?php echo count( $images ) > 3 ? '3' : count( $images ); ?>">
-			<?php foreach ( $images as $item ) :
-				$image = $item['review_image'] ?? '';
-				$alt   = $item['review_alt'] ?? 'Отзыв клиента';
-			?>
-				<?php if ( $image ) : ?>
-					<img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $alt ); ?>" class="rounded-[6px]">
-				<?php endif; ?>
-			<?php endforeach; ?>
-		</div>
+			<!-- Desktop: Grid -->
+			<div class="hidden lg:grid gap-1 lg:grid-cols-<?php echo count( $images ) > 3 ? '3' : count( $images ); ?>">
+				<?php foreach ( $images as $item ) :
+					$image = $item['review_image'] ?? '';
+					$alt   = $item['review_alt'] ?? 'Отзыв клиента';
+				?>
+					<?php if ( $image ) : ?>
+						<img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $alt ); ?>" class="rounded-[6px]">
+					<?php endif; ?>
+				<?php endforeach; ?>
+			</div>
+
+			<!-- Mobile: Swiper Slider -->
+			<div class="swiper lg:hidden pl-2.5" id="reviews-swiper">
+				<div class="swiper-wrapper">
+					<?php foreach ( $images as $item ) :
+						$image = $item['review_image'] ?? '';
+						$alt   = $item['review_alt'] ?? 'Отзыв клиента';
+					?>
+						<?php if ( $image ) : ?>
+							<div class="swiper-slide">
+								<img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $alt ); ?>" class="rounded-[6px]">
+							</div>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</div>
+			</div>
 		<?php endif; ?>
 		<div class="mt-11 flex flex-col items-center gap-6 sm:flex-row sm:justify-center">
 			<div class="text-center sm:text-left">
@@ -51,3 +68,19 @@ $cta_target     = $cta_link['target'] ?? '_self';
 		</div>
 	</div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+	var swiperEl = document.getElementById('reviews-swiper');
+	if (!swiperEl) return;
+
+	new Swiper('#reviews-swiper', {
+		slidesPerView: 1.2,
+		spaceBetween: 6,
+		pagination: {
+			el: '.swiper-pagination',
+			clickable: true,
+		},
+	});
+});
+</script>

@@ -65,7 +65,7 @@ $total_works = count($works);
 		</div>
 
 		<!-- Mobile: Swiper Slider -->
-		<div class="swiper lg:hidden" id="portfolio-swiper">
+		<div class="swiper lg:hidden pl-2.5" id="portfolio-swiper">
 			<div class="swiper-wrapper">
 				<?php foreach ($works as $work): ?>
 					<div class="swiper-slide">
@@ -79,9 +79,6 @@ $total_works = count($works);
 					</div>
 				<?php endforeach; ?>
 			</div>
-			<?php if ($total_works > 1): ?>
-				<div class="swiper-pagination"></div>
-			<?php endif; ?>
 		</div>
 	<?php endif; ?>
 
@@ -132,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 	new Swiper('#portfolio-swiper', {
 		slidesPerView: 1.2,
-		spaceBetween: 12,
+		spaceBetween: 6,
 		pagination: {
 			el: '.swiper-pagination',
 			clickable: true,
