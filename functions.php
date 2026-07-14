@@ -1905,6 +1905,58 @@ function belgranit_register_product_services_fields() {
 }
 
 /**
+ * Product custom price text
+ *
+ * Adds a free-text price field (e.g. "По согласованию") to the WooCommerce
+ * "General" product data tab, right under the regular price. When filled,
+ * the numeric price is replaced on the front-end and no currency symbol shows.
+ */
+add_action( 'woocommerce_product_options_general_product_data', 'belgranit_add_product_price_text_field' );
+function belgranit_add_product_price_text_field() {
+	woocommerce_wp_text_input( array(
+		'id'          => '_product_price_text',
+		'label'       => 'Текст цены (вместо числа)',
+		'description' => 'Например: «По согласованию». Если заполнено, вместо числовой цены показывается этот текст без обозначения валюты.',
+		'desc_tip'    => true,
+		'placeholder' => 'По согласованию',
+		'data_type'   => 'text',
+	) );
+}
+
+add_action( 'woocommerce_process_product_meta', 'belgranit_save_product_price_text_field' );
+function belgranit_save_product_price_text_field( $post_id ) {
+	if ( ! isset( $_POST['_product_price_text'] ) ) {
+		return;
+	}
+
+	$value = wp_strip_all_tags( trim( wp_unslash( $_POST['_product_price_text'] ) ) );
+	update_post_meta( $post_id, '_product_price_text', $value );
+}
+
+/**
+ * Replace the numeric price with the custom price text (no currency symbol)
+ * when the editor has filled the "_product_price_text" meta.
+ */
+add_filter( 'woocommerce_get_price_html', 'belgranit_product_price_text_html', 10, 2 );
+function belgranit_product_price_text_html( $price_html, $product ) {
+	if ( is_admin() ) {
+		return $price_html;
+	}
+
+	$product_id = $product instanceof WC_Product ? $product->get_id() : get_the_ID();
+	if ( ! $product_id ) {
+		return $price_html;
+	}
+
+	$price_text = get_post_meta( $product_id, '_product_price_text', true );
+	if ( ! empty( $price_text ) ) {
+		return esc_html( trim( $price_text ) );
+	}
+
+	return $price_html;
+}
+
+/**
  * Custom Post Type: Виды гранита
  */
 add_action( 'init', 'belgranit_register_granite_type' );

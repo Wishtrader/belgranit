@@ -113,10 +113,10 @@ get_header();
 
 					<div class="w-[46px] h-[1px] bg-[#690008] mb-[14px]"></div>
 
-					<?php if ($product->get_price()): ?>
+					<?php if ( $product->get_price() || get_post_meta( $product->get_id(), '_product_price_text', true ) ): ?>
 						<div class="mb-4">
 							<span class="text-base text-gray-500 font-body">Цена: </span>
-							<span class="text-2xl font-bold text-[#860000] font-manrope"><?php echo wp_strip_all_tags($price); ?></span>
+							<span class="text-2xl font-bold text-[#860000] font-manrope"><?php echo wp_strip_all_tags( $price ); ?></span>
 						</div>
 					<?php endif; ?>
 
