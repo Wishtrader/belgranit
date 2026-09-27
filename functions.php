@@ -613,6 +613,42 @@ add_action( 'init', function() {
 	}
 } );
 
+/**
+ * Rewrite-rule generation version. Bump to force a one-time flush after deploy.
+ */
+define( 'BELGRANIT_REWRITES_VERSION', '2' );
+
+/**
+ * Mark product category rewrite rules as dirty when a category changes.
+ *
+ * The flush is deliberately deferred: the per-term rules are registered on
+ * `init`, which has already run by the time a term is created/edited/deleted.
+ * Flushing here would persist rules without the new term, so instead we flag
+ * it and flush on the next request (at `wp_loaded`, after `init` has
+ * registered the current terms).
+ */
+add_action( 'created_product_cat', 'belgranit_mark_rewrites_dirty' );
+add_action( 'edited_product_cat', 'belgranit_mark_rewrites_dirty' );
+add_action( 'delete_product_cat', 'belgranit_mark_rewrites_dirty' );
+function belgranit_mark_rewrites_dirty() {
+	update_option( 'belgranit_rewrites_dirty', 1 );
+}
+
+/**
+ * Flush rewrite rules once when marked dirty or after the generation logic changes.
+ */
+add_action( 'wp_loaded', 'belgranit_maybe_flush_rewrites' );
+function belgranit_maybe_flush_rewrites() {
+	$dirty   = (int) get_option( 'belgranit_rewrites_dirty', 0 );
+	$version = get_option( 'belgranit_rewrites_version' );
+
+	if ( $dirty || $version !== BELGRANIT_REWRITES_VERSION ) {
+		delete_option( 'belgranit_rewrites_dirty' );
+		update_option( 'belgranit_rewrites_version', BELGRANIT_REWRITES_VERSION );
+		flush_rewrite_rules();
+	}
+}
+
 add_filter( 'term_link', function( $url, $term ) {
 	if ( $term instanceof WP_Term && 'product_cat' === $term->taxonomy ) {
 		$url = home_url( '/' . $term->slug . '/' );
@@ -3162,6 +3198,14 @@ function belgranit_register_3d_fields() {
 				'return_format' => 'url',
 				'preview_size'  => 'medium',
 				'library'       => 'all',
+			),
+
+			array(
+				'key'          => 'field_3d_video',
+				'label'        => 'Видео 3D-макета (WebM)',
+				'name'         => 'section_3d_video',
+				'type'         => 'url',
+				'placeholder'  => 'https://example.com/video.webm',
 			),
 
 			// Tab: Features

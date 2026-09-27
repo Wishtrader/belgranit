@@ -90,7 +90,7 @@ colors: {
 },
 fontFamily: {
     body: ['Inter', 'sans-serif'],
-    heading: ['Playfair Display SC', 'serif'],
+    heading: ['Manrope', 'sans-serif'],
 },
 ```
 

@@ -25,7 +25,7 @@ $permalink = $product->get_permalink();
     esc_url($permalink)
 ; ?>" class="group block bg-white rounded-[6px] border border-gray-100 overflow-hidden shadow-lg">
 	<!-- Product Image -->
-	<div class="overflow-hidden">
+	<div class="overflow-hidden product-img-wrap">
 		<?php if ($image_id): ?>
 			<?php echo wp_get_attachment_image($image_id, 'woocommerce_medium', false, array(
     			'class' => 'w-full h-full object-cover group-hover:scale-105 transition-transform duration-300',

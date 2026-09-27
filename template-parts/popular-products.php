@@ -52,12 +52,12 @@ $product_ids = get_field('popular_products');
 		<div class="hidden md:grid grid-cols-4 gap-5">
 			<?php foreach ($all_products as $item): ?>
 				<a href="<?php echo
-    				esc_url($item['link'])
+					esc_url($item['link'])
 				; ?>" class="group block bg-white rounded-[6px] border border-gray-100 overflow-hidden shadow-lg">
-					<div class="overflow-hidden">
+					<div class="overflow-hidden product-img-wrap">
 						<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
-    						esc_attr($item['title'])
-						; ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+							esc_attr($item['title'])
+							; ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
 					</div>
 					<div class="p-4 bg-[#F5F4F3]">
 						<h3 class="font-manrope text-lg text-ink mb-3 leading-[1.2] min-h-[40px]"><?php echo
@@ -75,14 +75,14 @@ $product_ids = get_field('popular_products');
 		<!-- Mobile grid: 2 columns -->
 		<div class="md:hidden grid grid-cols-2 gap-3">
 			<?php foreach ($all_products as $item): ?>
-				<a href="<?php echo
-    				esc_url($item['link'])
-				; ?>" class="group block bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
-					<div class="aspect-square overflow-hidden bg-gray-50 p-2">
-						<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
-    						esc_attr($item['title'])
-						; ?>" class="w-full h-full object-contain">
-					</div>
+					<a href="<?php echo
+						esc_url($item['link'])
+					; ?>" class="group block bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+						<div class="overflow-hidden product-img-wrap bg-gray-50">
+							<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
+								esc_attr($item['title'])
+								; ?>" class="w-full h-full object-cover">
+						</div>
 					<div class="p-3">
 						<h3 class="font-body text-xs font-semibold text-ink mb-2 line-clamp-2 min-h-[32px]"><?php echo
     						esc_html($item['title'])

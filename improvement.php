@@ -409,25 +409,25 @@ get_header(); ?>
 			<div class="flex flex-col md:flex-row justify-between">
 
 				<!-- Left: CTA -->
-				<div>
-					<h2 class="font-playfair text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-4">
+				<div class="flex justify-center flex-col">
+					<h2 class="font-playfair text-center text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-4">
 						<?php echo esc_html($consult_title); ?>
 					</h2>
 
 					<?php if ($consult_icon): ?>
-						<div class="flex items-center justify-center lg:justify-start gap-3 mb-6">
-							<img src="<?php echo esc_url($consult_icon); ?>" alt="" class="">
+						<div class="flex items-center !justify-center lg:justify-start gap-3 mb-6">
+							<img src="<?php echo esc_url($consult_icon); ?>" alt="" class="max-auto">
 						</div>
 					<?php endif; ?>
 
-					<p class="text-gray-600 font-body text-center lg:text-left leading-[1.2] mb-10 max-w-md">
+					<p class="text-gray-600 font-body !text-center lg:text-left leading-[1.2] mb-10 max-w-md">
 						<?php echo esc_html($consult_text); ?>
 					</p>
 
 					<a
 						href="<?php echo esc_url($consult_btn_link); ?>"
 						data-popup="consult"
-						class="inline-flex items-center justify-center gap-2 bg-[#860000] hover:bg-red-700 lg:w-[344px] w-full text-white text-base rounded-[6px] px-8 py-4 transition-colors font-body mb-8 lg:mb-0"
+						class="inline-flex mx-auto items-center justify-center gap-2 bg-[#860000] hover:bg-red-700 lg:w-[344px] w-full text-white text-base rounded-[6px] px-8 py-4 transition-colors font-body mb-8 lg:mb-0"
 					>
 						<?php echo esc_html($consult_btn_text); ?>
 					<img src="<?php echo get_template_directory_uri(); ?>/img/arr2.svg" alt="arrow" class="" />

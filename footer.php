@@ -53,7 +53,6 @@ $contacts = belgranit_get_contacts();
 					<ul class="space-y-2.5 list-none m-0 p-0">
 					<?php
 					$info_items = array(
-						array( 'title' => 'Модели', 'url' => get_permalink( get_page_by_path( 'models' ) ) ?: '#' ),
 						array( 'title' => 'Примеры работ', 'url' => get_permalink( get_page_by_path( 'examples' ) ) ?: '#' ),
 						array( 'title' => 'Контакты', 'url' => get_permalink( get_page_by_path( 'contacts' ) ) ?: '#' ),
 					);

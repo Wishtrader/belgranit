@@ -19,7 +19,7 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@700&family=Playfair+Display+SC:wght@400;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
 	<script src="https://cdn.tailwindcss.com"></script>
 	<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 	<script>
@@ -34,7 +34,7 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 					muted: '#f5f4f3',
 				},
 				fontFamily: {
-					playfair: ['Playfair Display SC', 'serif'],
+					playfair: ['Manrope', 'sans-serif'],
 					manrope: ['Manrope', 'sans-serif'],
 					body: ['Inter', 'sans-serif'],
 				},
@@ -47,10 +47,10 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 	</script>
 	<style>
 	/* Font families */
-	.font-playfair { font-family: 'Playfair Display SC', serif; }
+	.font-playfair { font-family: 'Manrope', sans-serif; }
 	.font-manrope { font-family: 'Manrope', sans-serif; }
 	.font-body { font-family: 'Inter', sans-serif; }
-	.font-heading { font-family: 'Playfair Display SC', serif; }
+	.font-heading { font-family: 'Manrope', sans-serif; }
 
 	/* Mobile menu transitions */
 	#mobile-menu {
@@ -209,7 +209,6 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 						array( 'title' => 'Благоустройство', 'slug' => 'improvement',    'type' => 'page',        'has_children' => false ),
 						array( 'title' => 'Ограды',          'slug' => 'ogradi',         'type' => 'product_cat', 'has_children' => true ),
 						array( 'title' => 'Оформление',      'slug' => 'oformlenie',     'type' => 'product_cat', 'has_children' => true ),
-						array( 'title' => 'Модели',          'slug' => 'models',         'type' => 'page',        'has_children' => false ),
 						array( 'title' => 'Примеры работ',   'slug' => 'examples',       'type' => 'page',        'has_children' => false ),
 						array( 'title' => 'Контакты',        'slug' => 'contacts',       'type' => 'page',        'has_children' => false ),
 					);
@@ -403,7 +402,6 @@ $phone_1_link = belgranit_phone_link( $contacts['phone_1'] );
 
 			<?php
 			$static_pages = array(
-			array( 'title' => 'Модели', 'slug' => 'models' ),
 			array( 'title' => 'Примеры работ', 'slug' => 'examples' ),
 			array( 'title' => 'Контакты', 'slug' => 'contacts' ),
 			);

@@ -27,7 +27,7 @@ tailwind.config = {
             },
             fontFamily: {
                 body: ['Inter', 'sans-serif'],
-                heading: ['Playfair Display SC', 'serif'],
+                heading: ['Manrope', 'sans-serif'],
             },
         },
     },
@@ -35,7 +35,7 @@ tailwind.config = {
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display+SC&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&display=swap');
 </style>
 ```
 
@@ -74,7 +74,7 @@ Tags: custom-background, custom-logo, custom-menu, featured-images, threaded-com
 
 ### Шрифты
 - `font-body` — шрифт Inter для текста
-- `font-heading` — шрифт Playfair Display SC для заголовков
+- `font-heading` — шрифт Manrope для заголовков
 
 ### Примеры
 ```html

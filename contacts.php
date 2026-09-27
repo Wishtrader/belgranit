@@ -196,8 +196,8 @@ get_header(); ?>
 			<div class="flex flex-col md:flex-row justify-between">
 
 				<!-- Left: CTA -->
-				<div>
-					<h2 class="font-playfair text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-4">
+				<div class="flex flex-col items-center">
+					<h2 class="font-playfair text-[24px] text-center sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-4">
 						<?php echo esc_html($consult_title); ?>
 					</h2>
 
@@ -207,7 +207,7 @@ get_header(); ?>
 						</div>
 					<?php endif; ?>
 
-					<p class="text-gray-600 font-body text-center lg:text-left leading-[1.2] mb-10 max-w-md">
+					<p class="text-gray-600 font-body text-center leading-[1.2] mb-10 max-w-md">
 						<?php echo esc_html($consult_text); ?>
 					</p>
 

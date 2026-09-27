@@ -113,10 +113,10 @@ get_header();
 
 					<div class="w-[46px] h-[1px] bg-[#690008] mb-[14px]"></div>
 
-					<?php if ( $product->get_price() || get_post_meta( $product->get_id(), '_product_price_text', true ) ): ?>
+					<?php if ($product->get_price() || get_post_meta($product->get_id(), '_product_price_text', true)): ?>
 						<div class="mb-4">
 							<span class="text-base text-gray-500 font-body">Цена: </span>
-							<span class="text-2xl font-bold text-[#860000] font-manrope"><?php echo wp_strip_all_tags( $price ); ?></span>
+							<span class="text-2xl font-bold text-[#860000] font-manrope"><?php echo wp_strip_all_tags($price); ?></span>
 						</div>
 					<?php endif; ?>
 
@@ -446,8 +446,8 @@ get_header();
 				<div class="flex flex-col md:flex-row justify-between">
 
 					<!-- Left: CTA -->
-					<div>
-						<h2 class="font-playfair text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-4">
+					<div class="flex flex-col items-center">
+						<h2 class="font-playfair text-center text-[24px] sm:text-[28px] lg:text-[36px] font-bold text-ink uppercase leading-[1.2] mb-4">
 							<?php echo esc_html($consult_title); ?>
 						</h2>
 
@@ -457,7 +457,7 @@ get_header();
 							</div>
 						<?php endif; ?>
 
-						<p class="text-gray-600 font-body text-center lg:text-left leading-[1.2] mb-10 max-w-md">
+						<p class="text-gray-600 font-body text-center leading-[1.2] mb-10 max-w-md">
 							<?php echo esc_html($consult_text); ?>
 						</p>
 
@@ -601,7 +601,7 @@ get_header();
 											<a href="<?php echo
     											esc_url($item['link'])
 											; ?>" class="group block bg-white rounded-[6px] border border-gray-100 overflow-hidden shadow-lg">
-												<div class="overflow-hidden">
+												<div class="overflow-hidden product-img-wrap">
 													<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
     													esc_attr($item['title'])
 													; ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
@@ -629,21 +629,21 @@ get_header();
 							<?php foreach ($all_products as $item): ?>
 								<div class="swiper-slide">
 									<a href="<?php echo
-										esc_url($item['link'])
-										; ?>" class="group block bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
-										<div class="aspect-square overflow-hidden bg-gray-50 p-2">
+    									esc_url($item['link'])
+									; ?>" class="group block bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+										<div class="overflow-hidden product-img-wrap bg-gray-50">
 											<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
-												esc_attr($item['title'])
-												; ?>" class="w-full h-full object-contain">
+    											esc_attr($item['title'])
+											; ?>" class="w-full h-full object-cover">
 										</div>
 										<div class="p-3">
 											<h3 class="font-body text-xs font-semibold text-ink mb-2 line-clamp-2 min-h-[32px]"><?php echo
-												esc_html($item['title'])
-												; ?></h3>
+    											esc_html($item['title'])
+											; ?></h3>
 											<div class="w-full h-px bg-gray-200 mb-2"></div>
 											<p class="font-body text-xs text-gray-500">Цена: <span class="text-red-800 font-bold text-sm"><?php echo
-												wp_strip_all_tags($item['price'])
-												; ?></span></p>
+    											wp_strip_all_tags($item['price'])
+											; ?></span></p>
 										</div>
 									</a>
 								</div>
