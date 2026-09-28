@@ -107,7 +107,7 @@ get_header(); ?>
 										<?php if ($item_price): ?>
 											<span class="ml-4 shrink-0 text-[14px] font-bold text-[#272727] font-body"><?php echo
     											esc_html($item_price)
-											; ?> <span class="font-normal">BYN</span></span>
+    											; ?></span>
 										<?php endif; ?>
 									</div>
 								<?php endforeach; ?>
