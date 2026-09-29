@@ -18,6 +18,15 @@ $hero_subtitle = $page_id ? get_field('contacts_hero_subtitle', $page_id) : '';
 $map_address = $contacts['map_address'];
 $map_balloon = $contacts['map_balloon'];
 
+$map_src = 'https://yandex.ru/map-widget/v1/?' . http_build_query(
+	array(
+		'mode' => 'search',
+		'text' => $map_address,
+		'z'    => 17,
+		'lang' => 'ru_RU',
+	)
+);
+
 get_header(); ?>
 
 <main id="primary" class="site-main">
@@ -125,53 +134,20 @@ get_header(); ?>
 				</div>
 
 				<!-- Right: Yandex Map -->
-				<div id="contacts-map" class="w-full mt-8 lg:mt-0 h-[380px] lg:h-[610px] rounded-xl overflow-hidden bg-gray-100"></div>
+				<div id="contacts-map" class="w-full mt-8 lg:mt-0 h-[380px] lg:h-[610px] rounded-xl overflow-hidden bg-gray-100">
+					<iframe
+						src="<?php echo esc_url( $map_src ); ?>"
+						class="w-full h-full border-0"
+						frameborder="0"
+						allowfullscreen
+						loading="lazy"
+						title="<?php echo esc_attr( $map_balloon ? $map_balloon : $map_address ); ?>"
+					></iframe>
+				</div>
 
 			</div>
 		</div>
 	</section>
-
-	<!-- Yandex Maps -->
-	<script src="https://api-maps.yandex.ru/2.1/?apikey=&lang=ru_RU" type="text/javascript"></script>
-	<script type="text/javascript">
-	(function() {
-		var mapAddress = <?php echo wp_json_encode(esc_attr($map_address)); ?>;
-		var mapBalloon = <?php echo wp_json_encode(esc_attr($map_balloon)); ?>;
-
-		ymaps.ready(function() {
-			var myMap = new ymaps.Map('contacts-map', {
-				center: [53.9, 30.3],
-				zoom: 14,
-				controls: ['zoomControl', 'fullscreenControl']
-			});
-
-			var myPlacemark;
-
-			function updateMap(address) {
-				ymaps.geocode(address, { results: 1 }).then(function(res) {
-					var firstGeoObject = res.geoObjects.get(0);
-					if (!firstGeoObject) return;
-
-					var coords = firstGeoObject.geometry.getCoordinates();
-
-					myMap.geoObjects.removeAll();
-
-					myPlacemark = new ymaps.Placemark(coords, {
-						balloonContent: mapBalloon
-					}, {
-						preset: 'islands#redDotIcon',
-						iconColor: '#860000'
-					});
-
-					myMap.geoObjects.add(myPlacemark);
-					myMap.setCenter(coords, 14, { duration: 500 });
-				});
-			}
-
-			updateMap(mapAddress);
-		});
-	})();
-	</script>
 
 	<!-- Consultation Section -->
 	<?php

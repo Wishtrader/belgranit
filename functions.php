@@ -313,6 +313,19 @@ if ( defined( 'JETPACK__VERSION' ) ) {
 }
 
 /**
+ * Админ-инструмент: массовое наложение вотермарки на изображения товаров.
+ * Нужен для хостингов без WP-CLI (доступ только по FTP).
+ */
+require get_template_directory() . '/inc/watermark-admin.php';
+
+/**
+ * WP-CLI: массовое наложение вотермарки на изображения товаров.
+ */
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require get_template_directory() . '/inc/watermark-cli.php';
+}
+
+/**
  * Helper: Render site logo.
  *
  * @param string $css_class Additional CSS classes.
