@@ -98,9 +98,7 @@ $product_ids = get_field('popular_products');
 
 		<!-- Button -->
 		<div class="mt-10 text-center">
-			<a href="<?php echo
-    			esc_url(wc_get_page_permalink('shop'))
-			; ?>" class="inline-flex items-center justify-center gap-2 border-2 border-[#860000] text-[#860000] hover:bg-[#860000] hover:text-white text-base font-semibold uppercase tracking-wide px-8 py-4 rounded-[6px] transition-colors">
+			<a href="/pamyatniki" class="inline-flex items-center justify-center gap-2 border-2 border-[#860000] text-[#860000] hover:bg-[#860000] hover:text-white text-base font-semibold uppercase tracking-wide px-8 py-4 rounded-[6px] transition-colors">
 				Смотреть все решения
 					<svg width="17" height="12" viewBox="0 0 17 12" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-[17px] h-3 transition-colors"><path d="M16.5657 6.4568C16.8781 6.14438 16.8781 5.63785 16.5657 5.32543L11.4745 0.234259C11.1621 -0.0781603 10.6556 -0.0781603 10.3431 0.234259C10.0307 0.546679 10.0307 1.05321 10.3431 1.36563L14.8686 5.89111L10.3431 10.4166C10.0307 10.729 10.0307 11.2355 10.3431 11.548C10.6556 11.8604 11.1621 11.8604 11.4745 11.548L16.5657 6.4568ZM0 5.89111V6.69111H16V5.89111V5.09111H0V5.89111Z" fill="currentColor"/></svg>
 			</a>
