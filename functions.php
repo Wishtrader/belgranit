@@ -9,7 +9,7 @@
 
 if ( ! defined( '_S_VERSION' ) ) {
 	// Replace the version number of the theme on each release.
-	define( '_S_VERSION', '1.0.0' );
+	define( '_S_VERSION', '1.0.2' );
 }
 
 /**
@@ -106,6 +106,9 @@ function belgranit_setup() {
 		'gallery_thumbnail_image_width' => 200,
 		'single_image_width' => 600,
 	) );
+
+	// Каталожная карточка: изображение по ширине карточки, без обрезки по высоте.
+	add_image_size( 'woocommerce_medium', 800, 0, false );
 	add_theme_support( 'wc-product-gallery-zoom' );
 	add_theme_support( 'wc-product-gallery-lightbox' );
 	add_theme_support( 'wc-product-gallery-slider' );
@@ -324,6 +327,11 @@ require get_template_directory() . '/inc/watermark-admin.php';
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	require get_template_directory() . '/inc/watermark-cli.php';
 }
+
+/**
+ * Отзывы Яндекса для секции «Отзывы» на главной странице.
+ */
+require get_template_directory() . '/inc/yandex-reviews.php';
 
 /**
  * Helper: Render site logo.

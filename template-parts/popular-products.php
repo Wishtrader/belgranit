@@ -53,13 +53,13 @@ $product_ids = get_field('popular_products');
 			<?php foreach ($all_products as $item): ?>
 				<a href="<?php echo
     				esc_url($item['link'])
-				; ?>" class="group block bg-white rounded-[6px] border border-gray-100 overflow-hidden shadow-lg">
+				; ?>" class="group flex flex-col bg-white rounded-[6px] border border-gray-100 overflow-hidden shadow-lg">
 					<div class="overflow-hidden product-img-wrap">
 						<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
     						esc_attr($item['title'])
-						; ?>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+						; ?>" class="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-300">
 					</div>
-					<div class="p-4 bg-[#F5F4F3] h-full">
+					<div class="p-4 bg-[#F5F4F3] flex-1">
 						<h3 class="font-manrope text-lg text-ink mb-3 leading-[1.2] min-h-[40px]"><?php echo
     						esc_html($item['title'])
 						; ?></h3>
@@ -77,13 +77,13 @@ $product_ids = get_field('popular_products');
 			<?php foreach ($all_products as $item): ?>
 					<a href="<?php echo
     					esc_url($item['link'])
-					; ?>" class="group block bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
+					; ?>" class="group flex flex-col bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
 						<div class="overflow-hidden product-img-wrap bg-gray-50">
 							<img src="<?php echo esc_url($item['image']); ?>" alt="<?php echo
-    							esc_attr($item['title'])
-							; ?>" class="w-full h-full object-cover">
+								esc_attr($item['title'])
+							; ?>" class="w-full h-auto object-contain">
 						</div>
-					<div class="p-3">
+					<div class="p-3 flex-1">
 						<h3 class="font-body text-xs font-semibold text-ink mb-2 line-clamp-2 min-h-[32px]"><?php echo
     						esc_html($item['title'])
 						; ?></h3>

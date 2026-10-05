@@ -56,21 +56,24 @@ endif;
         }
         ?>
     <article class="group relative overflow-hidden rounded-md shadow-[0_4px_10px_rgba(0,0,0,0.1)]">
+      <a href="<?php echo
+          esc_url($link_url)
+      ; ?>" class="lg:hidden absolute inset-0 z-10" aria-hidden="true" tabindex="-1"></a>
       <div class="relative h-[374px] xl:h-[530px]">
         <?php if ($image): ?>
           <img src="<?php echo esc_url($image); ?>" alt="<?php echo
               esc_attr($title)
           ; ?>" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105">
         <?php endif; ?>
-        <div class="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-b from-transparent to-white/90"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-[60%] bg-gradient-to-b from-transparent via-white/70 to-white"></div>
         <div class="absolute bottom-0 left-0 right-0 p-2 lg:p-5">
-          <div class="max-w-[220px]">
+          <div class="max-w-[260px]">
             <?php if ($title): ?>
-              <h3 class="font-manrope text-lg font-bold text-ink"><?php echo esc_html($title); ?></h3>
+              <h3 class="font-manrope text-xl font-bold text-ink lg:text-2xl"><?php echo esc_html($title); ?></h3>
             <?php endif; ?>
-            <div class="mt-2 h-[32px]">
+            <div class="mt-2 min-h-[40px]">
               <?php if ($description): ?>
-                <p class="text-[12px] text-charcoal line-clamp-2"><?php echo esc_html($description); ?></p>
+                <p class="text-sm text-charcoal line-clamp-2 lg:text-base"><?php echo esc_html($description); ?></p>
               <?php endif; ?>
             </div>
             <div class="mt-5 h-px w-12 bg-[#860000]"></div>

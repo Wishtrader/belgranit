@@ -113,12 +113,6 @@ if ($parent_cat_id > 0) {
     ));
 }
 
-// Sort parameters
-$orderby = isset($_GET['orderby']) ? sanitize_text_field($_GET['orderby']) : '';
-$order = isset($_GET['order']) ? sanitize_text_field($_GET['order']) : 'DESC';
-
-// Search
-$search_query = isset($_GET['s']) ? sanitize_text_field($_GET['s']) : '';
 ?>
 
 <main id="primary" class="site-main">
@@ -145,52 +139,8 @@ $search_query = isset($_GET['s']) ? sanitize_text_field($_GET['s']) : '';
 		</div>
 	</section>
 
-	<!-- Search & Sort Bar -->
-	<section class="py-[32px] sticky top-[72px] z-30 bg-white px-[10px] lg:px-5">
-		<div class="max-w-[1200px] mx-auto">
-			<div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
-				<!-- Search -->
-				<form method="GET" class="relative" style="width: 992px; max-width: 100%;" action="<?php echo
-    				esc_url(wc_get_page_permalink('shop'))
-				; ?>">
-					<?php if ($cat_slug): ?>
-						<input type="hidden" name="product_cat" value="<?php echo esc_attr($cat_slug); ?>">
-					<?php endif; ?>
-					<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-					</svg>
-					<input type="text" name="s" value="<?php echo
-    					esc_attr($search_query)
-					; ?>" placeholder="Поиск по названию..." class="search-input w-full h-12 pl-10 pr-4 rounded-[8px] border border-[1px] border-[#724246]/20 font-body text-[14px] text-ink focus:outline-none focus:border-brand transition-colors bg-[#F7F5F3]">
-				</form>
-
-				<!-- Sort -->
-				<div class="flex items-center gap-2 shrink-0">
-					<select class="sort-select h-12 w-full lg:w-[166px] border border-[1px] border-[#724246]/20 rounded-[6px] px-4 py-2.5 font-body text-[14px] text-ink bg-[#F7F5F3] cursor-pointer focus:outline-none focus:border-brand transition-colors" onchange="window.location.href=this.value">
-						<?php
-
-						$current_url = remove_query_arg(array('orderby', 'order', 'paged'));
-						$sort_options = array(
-    						'' => 'Сортировать по:',
-    						'date' => 'По дате',
-    						'title' => 'По названию',
-    						'price' => 'По цене',
-    						'popularity' => 'По популярности',
-						);
-						foreach ($sort_options as $key => $label) {
-    						$sort_url = $key ? add_query_arg(array('orderby' => $key, 'order' => 'ASC'), $current_url) : $current_url;
-    						$selected = $orderby === $key || !$key && !$orderby ? ' selected' : '';
-    						echo '<option value="' . esc_url($sort_url) . '"' . $selected . '>' . esc_html($label) . '</option>';
-						}
-						?>
-					</select>
-				</div>
-			</div>
-		</div>
-	</section>
-
 	<!-- Main Content -->
-	<section class="py-8 sm:py-10 lg:py-0 px-[10px] lg:px-5">
+	<section class="pt-8 sm:pt-10 lg:pt-14 pb-8 sm:pb-10 lg:pb-0 px-[10px] lg:px-5">
 		<div class="max-w-[1200px] mx-auto">
 			<div class="flex flex-col lg:flex-row gap-6">
 
@@ -247,7 +197,7 @@ $search_query = isset($_GET['s']) ? sanitize_text_field($_GET['s']) : '';
 				<!-- Product Grid -->
 				<div class="flex-1">
 					<?php if (wc_get_loop_prop('total') > 0): ?>
-						<div class="grid grid-cols-1 lg:grid-cols-3 gap-2 lg:gap-6 px-[10px] lg:px-5">
+						<div class="grid grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-6 px-[10px] lg:px-5">
 							<?php while (have_posts()):
     							the_post(); ?>
 								<?php wc_get_template_part('content', 'product'); ?>
@@ -268,12 +218,6 @@ $search_query = isset($_GET['s']) ? sanitize_text_field($_GET['s']) : '';
 
 							if ($cat_slug) {
     							$base_url = add_query_arg('product_cat', $cat_slug, $base_url);
-							}
-							if ($search_query) {
-    							$base_url = add_query_arg('s', $search_query, $base_url);
-							}
-							if ($orderby) {
-    							$base_url = add_query_arg('orderby', $orderby, $base_url);
 							}
 
 							// Previous
