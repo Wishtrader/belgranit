@@ -165,13 +165,31 @@ get_header();
 		<!-- Services Section -->
 		<?php
 
-		$install_items = get_field('product_svc_install_items', 'options');
+		$svc_hidden_cats = array('ogradi', 'oformlenie');
+		$svc_hidden = false;
+		$svc_terms = wp_get_post_terms(get_the_ID(), 'product_cat');
+		if ($svc_terms && !is_wp_error($svc_terms)) {
+			foreach ($svc_terms as $svc_term) {
+				while ($svc_term) {
+					if (in_array($svc_term->slug, $svc_hidden_cats, true)) {
+						$svc_hidden = true;
+						break 2;
+					}
+					$svc_term = $svc_term->parent ? get_term($svc_term->parent, 'product_cat') : null;
+					if (is_wp_error($svc_term)) {
+						$svc_term = null;
+					}
+				}
+			}
+		}
+
+		$install_items = $svc_hidden ? array() : get_field('product_svc_install_items', 'options');
 		$install_icon = get_field('product_svc_install_icon', 'options');
 		$install_g_title = get_field('product_svc_install_guarantee_title', 'options') ?: 'Гарантия на камень';
 		$install_g_text = get_field('product_svc_install_guarantee_text', 'options') ?: 'Сохраняем качество на долгие годы';
 		$install_g_years = get_field('product_svc_install_guarantee_years', 'options') ?: 50;
 		$install_g_icon = get_field('product_svc_install_guarantee_icon', 'options');
-		$art_items = get_field('product_svc_art_items', 'options');
+		$art_items = $svc_hidden ? array() : get_field('product_svc_art_items', 'options');
 		$art_icon = get_field('product_svc_art_icon', 'options');
 		$art_note = get_field('product_svc_art_note', 'options')
 		?: 'Все работы выполняются нашими специалистами с соблюдением технологий и использованием качественных материалов';
