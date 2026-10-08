@@ -1,5 +1,14 @@
 # AGENTS.md
 
+## Деплой на удалённый сервер
+
+Всегда в конце ответа явно перечислять, какие файлы нужно обновить на удалённом сервере (WordPress-хостинге). Формат:
+
+**Файлы для загрузки на сервер:**
+- `path/to/file.php`
+
+Пользователь загружает файлы вручную (FTP/панель хостинга), поэтому без этого списка изменения не применятся.
+
 ## WordPress Taxonomy Slugs
 
 When comparing taxonomy slugs from URL parameters to `$category->slug`, always be aware that WordPress may URL-encode Cyrillic characters in slugs (e.g., `памятники` → `%d0%bf%d0%b0%d0%bc...`).

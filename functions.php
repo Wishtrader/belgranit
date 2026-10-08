@@ -9,7 +9,7 @@
 
 if ( ! defined( '_S_VERSION' ) ) {
 	// Replace the version number of the theme on each release.
-	define( '_S_VERSION', '1.0.2' );
+	define( '_S_VERSION', '1.0.3' );
 }
 
 /**
@@ -230,7 +230,7 @@ function belgranit_form_submit() {
 
 	$name    = sanitize_text_field( $_POST['name'] ?? '' );
 	$phone   = sanitize_text_field( $_POST['phone'] ?? '' );
-	$comment = sanitize_textarea_field( $_POST['comment'] ?? '' );
+	$comment = sanitize_textarea_field( $_POST['comment'] ?? $_POST['message'] ?? '' );
 	$form    = sanitize_text_field( $_POST['form_type'] ?? '' );
 
 	if ( empty( $name ) || empty( $phone ) ) {
@@ -255,6 +255,63 @@ function belgranit_form_submit() {
 	);
 
 	$sent = wp_mail( $admin_email, $subject, $message, $headers );
+
+	// Supabase: сохранение заявки для дашборда
+	$supabase_url = 'https://opffygsgvwarjslwfiki.supabase.co';
+	$supabase_key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9wZmZ5Z3NndndhcmpzbHdmaWtpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE0ODk0MzAsImV4cCI6MjEwNzA2NTQzMH0.4Z83EZeZ_Vp4lZ-xSimvOzUJAFfJU7VFAD_Id2PMzL8';
+
+	$supabase_result = wp_remote_post(
+		"{$supabase_url}/rest/v1/submissions",
+		array(
+			'timeout' => 5,
+			'headers' => array(
+				'apikey'        => $supabase_key,
+				'Authorization' => 'Bearer ' . $supabase_key,
+				'Content-Type'  => 'application/json',
+				'Prefer'        => 'return=minimal',
+			),
+			'body'    => wp_json_encode(
+				array(
+					'name'       => $name,
+					'phone'      => $phone,
+					'comment'    => $comment,
+					'form_type'  => $form,
+					'page_url'   => esc_url_raw( wp_get_referer() ?: '' ),
+					'user_agent' => isset( $_SERVER['HTTP_USER_AGENT'] ) ? mb_substr( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ), 0, 500 ) : '',
+				)
+			),
+		)
+	);
+
+	if ( is_wp_error( $supabase_result ) ) {
+		$supabase_status = 'ERR: ' . $supabase_result->get_error_message();
+	} else {
+		$supabase_status = wp_remote_retrieve_response_code( $supabase_result );
+		if ( 201 !== (int) $supabase_status ) {
+			$supabase_status .= ': ' . substr( wp_remote_retrieve_body( $supabase_result ), 0, 200 );
+		}
+	}
+
+	// Telegram notification
+	$bot_token  = '8914111645:AAHuTKgNOpWhLlFBNGaOK02KD0YrzlEHCbI';
+	$chat_id    = '-1004348677949';
+	$telegram_text = "📋 <b>{$form_label}</b>\n\n👤 Имя: {$name}\n📞 Телефон: {$phone}";
+	if ( $comment ) {
+		$telegram_text .= "\n💬 Комментарий: {$comment}";
+	}
+	$telegram_text .= "\n\n🗄 DB: <code>{$supabase_status}</code>";
+
+	wp_remote_post(
+		"https://api.telegram.org/bot{$bot_token}/sendMessage",
+		array(
+			'timeout' => 15,
+			'body'    => array(
+				'chat_id'    => $chat_id,
+				'parse_mode' => 'HTML',
+				'text'       => $telegram_text,
+			),
+		)
+	);
 
 	if ( $sent ) {
 		wp_send_json_success( array( 'message' => 'Заявка отправлена' ) );

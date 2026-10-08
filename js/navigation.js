@@ -2,8 +2,63 @@
  * File navigation.js.
  *
  * Handles toggling the navigation menu for small screens and enables TAB key
- * navigation support for dropdown menus.
+ * navigation support in dropdown menus.
  */
+
+// Form AJAX submission
+( function() {
+	if ( typeof belgranitAjax === 'undefined' ) {
+		return;
+	}
+
+	document.addEventListener( 'submit', function( e ) {
+		var form = e.target;
+		if ( ! form.matches( 'form' ) ) {
+			return;
+		}
+
+		var nonceField = form.querySelector( 'input[name="nonce"]' );
+		if ( ! nonceField ) {
+			return;
+		}
+
+		e.preventDefault();
+
+		var formData = new FormData( form );
+		formData.append( 'action', 'belgranit_form_submit' );
+
+		var btn = form.querySelector( 'button[type="submit"]' );
+		if ( btn ) {
+			btn.disabled = true;
+			btn.dataset.originalText = btn.textContent;
+			btn.textContent = 'Отправка...';
+		}
+
+		fetch( belgranitAjax.url, {
+			method: 'POST',
+			body: formData,
+			credentials: 'same-origin',
+		} )
+			.then( function( r ) { return r.json(); } )
+			.then( function( data ) {
+				if ( data.success ) {
+					window.location.href = '/thank-you';
+				} else {
+					alert( data.data && data.data.message ? data.data.message : 'Ошибка отправки. Попробуйте позже.' );
+				}
+			} )
+			.catch( function() {
+				alert( 'Ошибка сети. Попробуйте позже.' );
+			} )
+			.finally( function() {
+				if ( btn ) {
+					btn.disabled = false;
+					btn.textContent = btn.dataset.originalText;
+				}
+			} );
+	} );
+}() );
+
 ( function() {
 	const siteNavigation = document.getElementById( 'site-navigation' );
 
