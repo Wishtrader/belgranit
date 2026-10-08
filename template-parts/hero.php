@@ -30,11 +30,6 @@ $default_bg = get_template_directory_uri() . '/img/hero-bg.jpg';
 			<?php echo wp_kses_post($hero_heading); ?>
 		</h1>
 
-		<!-- Subtitle -->
-		<p class="font-heading text-lg md:text-[26px] font-normal !leading-[1.2] text-[#f0f0f0] tracking-normal mx-auto mb-6 lg:mb-10">
-			<?php echo esc_html($hero_subtitle); ?><br class="hidden sm:block">
-			<?php echo esc_html($hero_description); ?>
-		</p>
 
 		<!-- Buttons -->
 		<div class="relative w-full sm:w-auto z-10 flex flex-col sm:flex-row items-center justify-center gap-4 lg:gap-5 lg:mb-[-27px] lg:overflow-hidden lg:px-5 lg:backdrop-blur-sm lg:rounded-[24px]">
